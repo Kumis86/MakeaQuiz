@@ -2,7 +2,7 @@ import customtkinter as ctk
 from tkinter import messagebox
 from user import User
 from admin import Admin
-from quiz import Quiz
+from questions import Quiz
 
 class App:
     def __init__(self):
