@@ -114,6 +114,8 @@ class User:
                 if role == "admin":
                     self.app.admin.open_admin_mode()
                 else:
+                    if self.login_frame:
+                        self.login_frame.pack_forget()
                     self.app.quiz.open_quiz_mode(username)
 
         ctk.CTkButton(self.login_frame, text="Masuk", width=200, command=save_login).pack(pady=10)
