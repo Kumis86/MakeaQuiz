@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import bcrypt
+import re
 
 class User:
     def __init__(self, app, file="user.txt"):
@@ -33,11 +34,33 @@ class User:
             messagebox.showerror("Gagal", "Username sudah ada!")
             return
         
+        is_valid, message = self.is_valid_password(password)
+        if not is_valid:
+            messagebox.showerror("Gagal", message)
+            return
+        
         hashed_pw = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
         role = "admin" if isadmin else "user"
         self.user[username] = {"password": hashed_pw, "role": role}
         self.save_users()
         messagebox.showinfo("Sukses", f"{username} berhasil masuk ke kuis!, silakan login.")
+
+    def is_valid_password(self, password):
+        """Memeriksa apakah password memenuhi kriteria keamanan"""
+        if len(password) < 8:
+            return False, "Kata sandi harus memiliki minimal 8 karakter."
+        if not re.search(r"[A-Z]", password):
+            return False, "Kata sandi harus mengandung minimal satu huruf besar."
+        if not re.search(r"[a-z]", password):
+            return False, "Kata sandi harus mengandung minimal satu huruf kecil."
+        if not re.search(r"\d", password):
+            return False, "Kata sandi harus mengandung minimal satu angka."
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+            return False, "Kata sandi harus mengandung minimal satu simbol."
+        if re.search(r"(password|12345678|admin|qwerty)", password, re.IGNORECASE):
+            return False, "Kata sandi tidak boleh mengandung kata umum yang mudah ditebak."
+
+        return True, "Password valid."
 
     def login(self, username, password):
         if username in self.user:

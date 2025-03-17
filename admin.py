@@ -62,8 +62,7 @@ class Admin:
 
         if os.path.exists("user.txt"):
             with open("user.txt", "r") as file:
-                users = file.readlines()
-            users = [user.strip() for user in users]
+                users = [line.strip().split(",")[0] for line in file.readlines()]
         else:
             users = []
 
