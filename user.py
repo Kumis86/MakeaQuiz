@@ -33,7 +33,7 @@ class User:
         if username in self.user:
             messagebox.showerror("Gagal", "Username sudah ada!")
             return
-        
+
         is_valid, message = self.is_valid_password(password)
         if not is_valid:
             messagebox.showerror("Gagal", message)
@@ -47,6 +47,7 @@ class User:
 
     def is_valid_password(self, password):
         """Memeriksa apakah password memenuhi kriteria keamanan"""
+
         if len(password) < 8:
             return False, "Kata sandi harus memiliki minimal 8 karakter."
         if not re.search(r"[A-Z]", password):
@@ -59,9 +60,9 @@ class User:
             return False, "Kata sandi harus mengandung minimal satu simbol."
         if re.search(r"(password|12345678|admin|qwerty)", password, re.IGNORECASE):
             return False, "Kata sandi tidak boleh mengandung kata umum yang mudah ditebak."
-
+ 
         return True, "Password valid."
-
+    
     def login(self, username, password):
         if username in self.user:
             hashed_pw = self.user[username]["password"].encode('utf-8')

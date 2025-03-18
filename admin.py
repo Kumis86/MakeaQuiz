@@ -48,6 +48,7 @@ class Admin:
         ctk.CTkButton(self.navbar, text="Lihat Pertanyaan", command=self.show_questions).pack(side="left", padx=10)
         ctk.CTkButton(self.navbar, text="Edit Pertanyaan", command=self.show_edit_question).pack(side="left", padx=10)
         ctk.CTkButton(self.navbar, text="Hapus Pertanyaan", command=self.show_delete_question).pack(side="left", padx=10)
+        ctk.CTkButton(self.navbar, text="Set Timer", command=self.show_set_timer).pack(side="left", padx=10)
         ctk.CTkButton(self.navbar, text="Kembali", command=self.back_to_admin).pack(side="right", padx=10)
 
         # Table Frame
@@ -273,7 +274,7 @@ class Admin:
             
             self.edit_correct_entry = ctk.CTkEntry(self.edit_fields_container, 
                                                  placeholder_text="Nomor Opsi Benar (1-4)")
-            self.edit_correct_entry.insert(0, self.current_edit_question[-1])
+            self.edit_correct_entry.insert(0, correct)
             self.edit_correct_entry.pack(pady=5)
             
         elif q_type == "TF":
@@ -395,6 +396,36 @@ class Admin:
                 messagebox.showerror("Error", "Nomor pertanyaan tidak valid!")
         except ValueError:
             messagebox.showerror("Error", "Input harus berupa angka!")
+    
+    def show_set_timer(self):
+        # New method to configure timer
+        for widget in self.table_frame.winfo_children():
+            widget.destroy()
+
+        self.timer_frame = ctk.CTkFrame(self.table_frame)
+        self.timer_frame.pack(expand=True, fill="both")
+
+        ctk.CTkLabel(self.timer_frame, text="Set timer quiz (dalam menit)").pack(pady=10)
+        
+        self.timer_entry = ctk.CTkEntry(self.timer_frame)
+        self.timer_entry.pack(pady=5)
+        
+        ctk.CTkButton(self.timer_frame, text="Save", 
+                     command=self.save_timer_config).pack(pady=10)
+
+    def save_timer_config(self):
+        try:
+            minutes = int(self.timer_entry.get())
+            # Enforce 10-hour maximum (600 minutes)
+            if minutes > 600:
+                minutes = 600
+                messagebox.showinfo("Info", "Waktu maksimum timer adalah 10 jam! (600 menit). Timer akan disetel selama 600 menit.")
+        
+            with open("quiz_settings.txt", "w") as f:
+                f.write(f"timer_minutes={minutes}")
+            messagebox.showinfo("Success", "Konfigurasi timer berhasil disimpan!")
+        except ValueError:
+            messagebox.showerror("Error", "Masukan waktu yang valid")
 
     def back_to_admin(self):
         self.dashboard_frame.pack_forget()
