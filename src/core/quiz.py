@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from tkinter import messagebox
 import os
-from questions import EssayQuestion, MCQuestion, TFQuestion
+from src.core.questions import EssayQuestion, MCQuestion, TFQuestion
 
 class Quiz:
     def __init__(self, app):
@@ -47,11 +47,11 @@ class Quiz:
 
     def load_questions(self):
         self.questions = []
-        if not os.path.exists("quiz_questions.txt"):
+        if not os.path.exists("database/quiz_questions.txt"):
             return
         
         try:
-            with open("quiz_questions.txt", "r") as file:
+            with open("database/quiz_questions.txt", "r") as file:
                 for line in file:
                     parts = line.strip().split("|")
                     q_type = parts[0]
@@ -128,7 +128,7 @@ class Quiz:
 
     def save_final_score(self):
         try:
-            with open("leaderboard.txt", "a") as file:
+            with open("database/leaderboard.txt", "a") as file:
                 file.write(f"{self.username}|{self.total_score}\n")
         except Exception as e:
             messagebox.showerror("Error", f"Gagal menyimpan skor: {str(e)}")
@@ -137,7 +137,7 @@ class Quiz:
         # Default to 5 minutes if not configured
         self.timer_minutes = 5
         try:
-            with open("quiz_settings.txt", "r") as f:
+            with open("database/quiz_settings.txt", "r") as f:
                 for line in f:
                     if "timer_minutes" in line:
                         self.timer_minutes = int(line.split("=")[1])
