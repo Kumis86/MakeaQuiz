@@ -1,8 +1,8 @@
 import customtkinter as ctk
 from tkinter import messagebox, ttk
 import os
-from utils.scraper import Scraper
-from questions import EssayQuestion, MCQuestion, TFQuestion
+from src.utils.scraper import Scraper
+from src.core.questions import EssayQuestion, MCQuestion, TFQuestion
 
 ADMIN_PASSWORD = "admin123"
 
