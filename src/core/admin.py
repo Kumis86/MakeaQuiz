@@ -1,6 +1,8 @@
 import customtkinter as ctk
 from tkinter import messagebox, ttk
 import os
+from utils.scraper import Scraper
+from questions import EssayQuestion, MCQuestion, TFQuestion
 
 ADMIN_PASSWORD = "admin123"
 
@@ -8,6 +10,7 @@ class Admin:
     def __init__(self, app):
         self.app = app
         self.current_edit_question = None
+        self.scraper = Scraper(app)  # Inisialisasi Scraper
         # Ensure database directory exists
         os.makedirs("database", exist_ok=True)
         self.create_admin_frame()
@@ -46,6 +49,7 @@ class Admin:
 
         ctk.CTkButton(self.navbar, text="Leaderboard", command=self.show_leaderboard).pack(side="left", padx=10)
         ctk.CTkButton(self.navbar, text="Active Users", command=self.show_active_users).pack(side="left", padx=10)
+        ctk.CTkButton(self.navbar, text="Upload Soal", command=self.show_upload_question).pack(side="left", padx=10)
         ctk.CTkButton(self.navbar, text="Tambah Pertanyaan", command=self.show_add_question).pack(side="left", padx=10)
         ctk.CTkButton(self.navbar, text="Lihat Pertanyaan", command=self.show_questions).pack(side="left", padx=10)
         ctk.CTkButton(self.navbar, text="Edit Pertanyaan", command=self.show_edit_question).pack(side="left", padx=10)
@@ -60,6 +64,7 @@ class Admin:
         self.show_active_users()
 
     def show_active_users(self):
+        # Clear all widgets in table frame first
         for widget in self.table_frame.winfo_children():
             widget.destroy()
 
@@ -80,6 +85,7 @@ class Admin:
         self.table.pack(expand=True, fill="both")
 
     def show_leaderboard(self):
+        # Clear all widgets in table frame first
         for widget in self.table_frame.winfo_children():
             widget.destroy()
 
@@ -100,6 +106,7 @@ class Admin:
         self.table.pack(expand=True, fill="both")
 
     def show_add_question(self):
+        # Clear all widgets in table frame first
         for widget in self.table_frame.winfo_children():
             widget.destroy()
 
@@ -117,7 +124,7 @@ class Admin:
         # Common fields
         self.entry_question = ctk.CTkEntry(self.add_question_frame, width=400, placeholder_text="Pertanyaan")
         self.entry_question.pack(pady=5)
-        
+
         # Dynamic fields container
         self.dynamic_fields = ctk.CTkFrame(self.add_question_frame, fg_color="transparent")
         self.dynamic_fields.pack(pady=5)
@@ -156,15 +163,15 @@ class Admin:
             self.tf_answer.pack()
 
     def add_question(self):
-        q_type = self.q_type.get()
+        q_type = self.q_type.get().upper()  # Ubah ke uppercase
         question = self.entry_question.get()
         
-        if q_type == "Essay":
+        if q_type == "ESSAY":
             answer = self.answer_field.get()
             if not question or not answer:
                 messagebox.showerror("Error", "Harap isi semua field")
                 return
-            line = f"Essay|{question}|{answer}"
+            line = f"ESSAY|{question}|{answer}"
 
         elif q_type == "MC":
             options = [self.option1.get(), self.option2.get(), self.option3.get(), self.option4.get()]
@@ -253,41 +260,61 @@ class Admin:
         q_type = self.current_edit_question[0]
         question_text = self.current_edit_question[1]
 
+        # Question type selector (disabled in edit mode)
+        self.edit_q_type = ctk.StringVar(value=q_type)
+        ctk.CTkOptionMenu(self.edit_fields_container, 
+                         values=["ESSAY", "MC", "TF"],
+                         variable=self.edit_q_type,
+                         state="disabled").pack(pady=5)
+
         # Common question field
-        self.edit_question_entry = ctk.CTkEntry(self.edit_fields_container, width=400)
+        self.edit_question_entry = ctk.CTkEntry(self.edit_fields_container, 
+                                              width=400, 
+                                              placeholder_text="Pertanyaan")
         self.edit_question_entry.insert(0, question_text)
         self.edit_question_entry.pack(pady=5)
 
+        # Dynamic fields container
+        self.edit_dynamic_fields = ctk.CTkFrame(self.edit_fields_container, fg_color="transparent")
+        self.edit_dynamic_fields.pack(pady=5)
+
         # Type-specific fields
-        if q_type == "Essay":
-            self.edit_answer_entry = ctk.CTkEntry(self.edit_fields_container, width=400)
+        if q_type == "ESSAY":
+            self.edit_answer_entry = ctk.CTkEntry(self.edit_dynamic_fields, 
+                                                width=400, 
+                                                placeholder_text="Jawaban")
             self.edit_answer_entry.insert(0, self.current_edit_question[2])
-            self.edit_answer_entry.pack(pady=5)
+            self.edit_answer_entry.pack()
             
         elif q_type == "MC":
             options = self.current_edit_question[2:-1]
-            correct = str(int(self.current_edit_question[-1]) + 1) # convert to 1-based
+            correct = str(int(self.current_edit_question[-1]) + 1)  # convert to 1-based
+            
             self.edit_options_entries = []
-            for idx, opt in enumerate(options):
-                entry = ctk.CTkEntry(self.edit_fields_container, width=400)
+            for i, opt in enumerate(options, 1):
+                entry = ctk.CTkEntry(self.edit_dynamic_fields, 
+                                   width=400, 
+                                   placeholder_text=f"Opsi {i}")
                 entry.insert(0, opt)
                 entry.pack(pady=2)
                 self.edit_options_entries.append(entry)
             
-            self.edit_correct_entry = ctk.CTkEntry(self.edit_fields_container, 
+            self.edit_correct_entry = ctk.CTkEntry(self.edit_dynamic_fields, 
+                                                 width=400,
                                                  placeholder_text="Nomor Opsi Benar (1-4)")
             self.edit_correct_entry.insert(0, correct)
             self.edit_correct_entry.pack(pady=5)
             
         elif q_type == "TF":
-            self.edit_tf_answer = ctk.CTkOptionMenu(self.edit_fields_container, 
+            self.edit_tf_answer = ctk.CTkOptionMenu(self.edit_dynamic_fields, 
                                                   values=["True", "False"])
             self.edit_tf_answer.set(self.current_edit_question[2])
-            self.edit_tf_answer.pack(pady=5)
+            self.edit_tf_answer.pack()
 
         # Save button
         ctk.CTkButton(self.edit_fields_container, 
-                     text="Simpan Perubahan", 
+                     text="Simpan Perubahan",
+                     width=200,
                      command=self.save_edited_question).pack(pady=10)
 
     def save_edited_question(self):
@@ -300,7 +327,7 @@ class Admin:
             q_type = self.current_edit_question[0]
             new_question = self.edit_question_entry.get()
             
-            if q_type == "Essay":
+            if q_type == "ESSAY":
                 new_answer = self.edit_answer_entry.get()
                 if not new_question or not new_answer:
                     messagebox.showerror("Error", "Harap isi semua field")
@@ -364,9 +391,9 @@ class Admin:
             with open("database/quiz_questions.txt", "r") as file:
                 for line in file:
                     parts = line.strip().split("|")
-                    q_type = parts[0]
+                    q_type = parts[0].upper()  # Ubah ke uppercase untuk konsistensi
                     
-                    if q_type == "Essay":
+                    if q_type == "ESSAY":
                         questions.append(f"Essay: {parts[1]} (Answer: {parts[2]})")
                     elif q_type == "MC":
                         options = "/".join(parts[2:-1])
@@ -398,7 +425,7 @@ class Admin:
                 messagebox.showerror("Error", "Nomor pertanyaan tidak valid!")
         except ValueError:
             messagebox.showerror("Error", "Input harus berupa angka!")
-    
+
     def show_set_timer(self):
         # New method to configure timer
         for widget in self.table_frame.winfo_children():
@@ -430,9 +457,129 @@ class Admin:
             messagebox.showerror("Error", "Masukan waktu yang valid")
 
     def back_to_admin(self):
+        # Clear all widgets in table frame first
+        for widget in self.table_frame.winfo_children():
+            widget.destroy()
         self.dashboard_frame.pack_forget()
         self.admin_frame.pack(expand=True, fill="both")
 
     def back_to_main(self):
         self.admin_frame.pack_forget()
         self.app.main_frame.pack(expand=True, fill="both")
+
+    def show_upload_question(self):
+        """Menampilkan frame upload soal"""
+        # Clear all widgets in table frame first
+        for widget in self.table_frame.winfo_children():
+            widget.destroy()
+            
+        # Buat frame baru untuk upload
+        self.upload_frame = ctk.CTkFrame(self.table_frame, fg_color="transparent")
+        self.upload_frame.pack(expand=True, fill="both")
+        
+        # Tambahkan judul
+        ctk.CTkLabel(self.upload_frame, text="Upload Soal Quiz", font=("Arial", 16, "bold")).pack(pady=10)
+        
+        # Tambahkan informasi format
+        info_frame = ctk.CTkFrame(self.upload_frame, fg_color="#F5F9FF")
+        info_frame.pack(padx=20, pady=20, fill="x")
+        
+        ctk.CTkLabel(
+            info_frame,
+            text="Format File Soal",
+            font=("Arial", 14, "bold"),
+            text_color="#1565C0"
+        ).pack(pady=5)
+        
+        formats = [
+            ("1. Essay", "ESSAY|Pertanyaan|Jawaban"),
+            ("2. Multiple Choice", "MC|Pertanyaan|Opsi1|Opsi2|Opsi3|Opsi4|JawabanBenar(0-3)"),
+            ("3. True/False", "TF|Pertanyaan|True/False")
+        ]
+        
+        for title, format_text in formats:
+            format_item = ctk.CTkFrame(info_frame, fg_color="#FFFFFF")
+            format_item.pack(fill="x", padx=10, pady=2)
+            
+            ctk.CTkLabel(
+                format_item,
+                text=title,
+                font=("Arial", 12, "bold"),
+                text_color="#1976D2"
+            ).pack(anchor="w", padx=10, pady=(5,0))
+            
+            ctk.CTkLabel(
+                format_item,
+                text=format_text,
+                font=("Arial", 11),
+                text_color="#424242"
+            ).pack(anchor="w", padx=10, pady=(0,5))
+
+        # Tambahkan catatan
+        note_frame = ctk.CTkFrame(self.upload_frame, fg_color="#FFF8E1")  # Warna kuning muda
+        note_frame.pack(fill="x", padx=20, pady=10)
+        
+        ctk.CTkLabel(
+            note_frame,
+            text="Catatan:",
+            font=("Arial", 14, "bold"),
+            text_color="#F57F17"  # Orange tua
+        ).pack(anchor="w", padx=10, pady=(5,0))
+        
+        notes = [
+            "• Format yang sama berlaku untuk file .txt dan .docx",
+            "• Setiap soal harus ditulis dalam baris baru",
+            "• Gunakan tanda | (pipe) sebagai pemisah",
+            "• Untuk MC, jawaban benar adalah indeks opsi (0-3)",
+            "• Jangan ada spasi di akhir baris"
+        ]
+        
+        for note in notes:
+            ctk.CTkLabel(
+                note_frame,
+                text=note,
+                font=("Arial", 11),
+                text_color="#5D4037"  # Cokelat tua
+            ).pack(anchor="w", padx=10, pady=1)
+        
+        # Tambahkan tombol-tombol upload di bagian bawah
+        buttons_frame = ctk.CTkFrame(self.upload_frame, fg_color="transparent")
+        buttons_frame.pack(pady=20)
+        
+        ctk.CTkButton(
+            buttons_frame,
+            text="Upload File .txt",
+            width=200,
+            height=40,
+            command=lambda: self.scraper.upload_question_file("txt"),
+            fg_color="#2196F3",
+            hover_color="#1976D2",
+            text_color="#FFFFFF"
+        ).pack(pady=5)
+        
+        ctk.CTkButton(
+            buttons_frame,
+            text="Upload File .docx",
+            width=200,
+            height=40,
+            command=lambda: self.scraper.upload_question_file("docx"),
+            fg_color="#4CAF50",
+            hover_color="#388E3C",
+            text_color="#FFFFFF"
+        ).pack(pady=5)
+
+if __name__ == "__main__":
+    root = ctk.CTk()
+    root.title("Quiz Admin Panel")
+    root.geometry("1200x600")
+    
+    class App:
+        def __init__(self, root):
+            self.root = root
+            self.main_frame = ctk.CTkFrame(root, fg_color="transparent")
+            self.main_frame.pack(expand=True, fill="both")
+            
+    app = App(root)
+    admin = Admin(app)
+    admin.open_admin_mode()
+    root.mainloop()
