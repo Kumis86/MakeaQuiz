@@ -1,1 +1,3 @@
 Nasrul,$2b$12$9bs/llGBHzFwK5UOn21LUO2HvYK4N.hVcYDWqNEJi4tEt9q0FQfMK,user
+dimas,$2b$12$6G3nEyL877tr/afE9AiCEufdCmZ/fPdyW8ZTm4GTOf/MsJKuxoY/u,user
+naufal,$2b$12$aQbeThbW9BzyaIVxQ6AmNuWAxF/o7h39GfsBZwWhH2lSdBH6S/77a,user
