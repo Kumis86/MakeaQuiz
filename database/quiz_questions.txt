@@ -1,0 +1,2 @@
+TF|apakah informatika menyenangkan?|True
+MC|10 adalah?|1 + 9|5 + 5|3 + 7|Semuanya Benar|3
