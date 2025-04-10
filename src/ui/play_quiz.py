@@ -136,9 +136,9 @@ class PlayQuizScreen(ctk.CTkFrame):
         Contoh: mode_tf.png, mode_essay.png, mode_mc.png
         """
         mode_files = {
-            "True/False": "mode_tf.png",
-            "Essay": "mode_essay.png",
-            "Pilihan Ganda": "mode_mc.png"
+            "True/False": "mode_tf.JPG",
+            "Essay": "mode_essay.JPG",
+            "Pilihan Ganda": "mode_mc.JPG"
         }
         placeholder_size = (200, 150) # Ukuran gambar (sesuaikan jika perlu)
 
@@ -215,7 +215,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             image=initial_image,
             fg_color="transparent"
         )
-        self.mode_image_label.pack(pady=(20, 10)) # Padding atas dan bawah
+        self.mode_image_label.pack(pady=(10, 20)) # Padding atas dan bawah
 
         # Label Nama Mode di dalam Kartu
         self.mode_name_label = ctk.CTkLabel(
@@ -665,10 +665,10 @@ class PlayQuizScreen(ctk.CTkFrame):
         # Update Nama Mode
         if self.mode_name_label:
             self.mode_name_label.configure(text=current_mode)
-        
+
+        new_image = self.mode_images.get(current_mode)
         # Update Gambar Mode
         if self.mode_image_label:
-            new_image = self.mode_images.get(current_mode, None)
             self.mode_image_label.configure(
                  image=new_image,
                  text="" if new_image else "Gambar tidak ditemukan" # Tampilkan placeholder jika gambar None
@@ -928,6 +928,11 @@ class PlayQuizScreen(ctk.CTkFrame):
         elif q_type == "True/False":
             correct_answer = question_data['answer'] # boolean
             is_correct = (selected_answer == correct_answer)
+            self.app_instance.audio.play_sound_effect(" assets/audio/select.wav")
+            if not is_correct :
+                self.app_instance.audio.play_sound_effect("assets/audio/wrong.wav")
+            else :
+                self.app_instance.audio.play_sound_effect("assets/audio/select.wav")
             feedback_text = "Benar!" if is_correct else f"Salah. Jawaban: {correct_answer}"
             feedback_color = "#4CAF50" if is_correct else "#E74C3C"
             if is_correct: self.score += 1 # <<< Skor hanya untuk TF & MC
@@ -936,6 +941,11 @@ class PlayQuizScreen(ctk.CTkFrame):
         elif q_type == "Pilihan Ganda":
              correct_index = question_data['correct'] # integer (indeks)
              is_correct = (selected_answer == correct_index)
+             self.app_instance.audio.play_sound_effect("assets/audio/select.wav")
+             if not is_correct:
+                 self.app_instance.audio.play_sound_effect("assets/audio/wrong.wav")
+             else :
+                self.app_instance.audio.play_sound_effect("assets/audio/select.wav")
              feedback_text = "Benar!" if is_correct else f"Salah. Jawaban: {correct_index + 1}. {question_data['options'][correct_index]}"
              feedback_color = "#4CAF50" if is_correct else "#E74C3C"
              if is_correct: self.score += 1 # <<< Skor hanya untuk TF & MC

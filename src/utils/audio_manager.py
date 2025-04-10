@@ -5,7 +5,7 @@ class AudioManager:
         pygame.mixer.init()
         self.current_music = None
 
-    def play_music(self, path, volume=0.3, loop=-1):
+    def play_music(self, path, volume=1.0, loop=-1):
         try:
             if self.current_music != path:
                 pygame.mixer.music.load(path)
@@ -22,7 +22,7 @@ class AudioManager:
     def play_sound_effect(self, path):
         try:
             sound = pygame.mixer.Sound(path)
-            sound.set_volume(0.5)
+            sound.set_volume(1.0)
             sound.play()
         except Exception as e:
             print(f"[AudioManager] Error playing sound effect: {e}")

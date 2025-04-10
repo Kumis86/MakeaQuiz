@@ -5,3 +5,14 @@ Kumis|1|1|Pilihan Ganda
 Kumis|1|1|True/False
 yanto|1|1|Pilihan Ganda
 asep|1|1|True/False
+asep|1|1|Pilihan Ganda
+asep|1|1|True/False
+Amalia|0|1|True/False
+Amalia|1|1|True/False
+Amalia|0|1|Pilihan Ganda
+Amalia|1|1|Pilihan Ganda
+Amalia|0|1|Pilihan Ganda
+Amalia|0|1|Pilihan Ganda
+Amalia|1|1|Pilihan Ganda
+Amalia|0|1|Pilihan Ganda
+Amalia|1|1|Pilihan Ganda

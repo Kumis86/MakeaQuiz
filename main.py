@@ -3,6 +3,8 @@ import customtkinter as ctk
 import traceback
 import sys
 import tkinter.messagebox as messagebox
+import pygame
+
 
 try:
     # Import komponen-komponen UI
@@ -16,7 +18,9 @@ try:
     # Import utilitas aplikasi
     from src.utils.config import AppConfig
     from src.utils.assets import AssetManager
+    from src.utils.audio_manager import AudioManager
     from src.core.user import User
+    from src.core.admin import Admin
 except ImportError as e:
     print(f"Error importing modules: {e}")
     traceback.print_exc()
@@ -29,6 +33,7 @@ class MakeaQuizApp:
             self.user_instance = User(self)
             self.config = AppConfig()
             self.asset_manager = AssetManager()
+            self.audio = AudioManager()
             self.window = None
             self.current_frame = None
             self.admin_instance = None
@@ -40,6 +45,12 @@ class MakeaQuizApp:
     def initialize_app(self):
         """Inisialisasi jendela utama aplikasi"""
         try:
+            #---Inisialisasi Musik---
+            pygame.mixer.init()
+            pygame.mixer.music.load("assets/audio/main_theme.mp3")  # Ganti dengan path audio kamu
+            pygame.mixer.music.set_volume(100)  # Bisa kamu atur sesuai selera
+            pygame.mixer.music.play(-1)  # -1 artinya musik akan loop terus
+
             # Mengatur tema dan warna aplikasi
             ctk.set_appearance_mode("dark")
             ctk.set_default_color_theme("blue")
@@ -49,7 +60,6 @@ class MakeaQuizApp:
             self.window.geometry(f"{self.config.width}x{self.config.height}")
             self.window.title(self.config.app_name)
             self.window.resizable(False, False)
-            self.window.configure(fg_color="#3B2869")  # Warna background utama (ungu gelap)
             
             # Mulai dengan splash screen
             self.show_splash_screen()
@@ -80,45 +90,45 @@ class MakeaQuizApp:
                 admin_callback=self.navigate_to_admin_login,
                 user_callback=self.navigate_to_login
             )
+            
+            self.audio.play_music("assets/audio/main_theme.mp3")
+
         except Exception as e:
             print(f"Error in show_main_screen: {e}")
             traceback.print_exc()
-    
+
     def show_admin_login(self):
         """Menampilkan layar login admin"""
         try:
             if self.current_frame:
                 self.current_frame.destroy()
             self.current_frame = AdminLogin(
-                self.window, 
-                dashboard_callback=self.navigate_to_dashboard,
+                self.window,
+                success_callback=self.handle_admin_login,
                 back_callback=self.navigate_to_main_screen
             )
         except Exception as e:
             print(f"Error in show_admin_login: {e}")
             traceback.print_exc()
-        
+    
     def show_login_screen(self):
         """Menampilkan layar login"""
         try:
             if self.current_frame:
-                self.current_frame.place_forget()
                 self.current_frame.destroy()
                 self.current_frame = None
 
-
             self.current_frame = LoginScreen(
-                self.window, 
-                self.user_instance,  
+                self.window,
+                self.user_instance,
                 login_callback=self.navigate_to_play_quiz,
                 signup_callback=self.navigate_to_signup,
                 back_callback=self.show_main_screen,
                 user_callback=self.navigate_to_login
             )
-
             self.current_frame.place(x=0, y=0, relwidth=1, relheight=1)
         except Exception as e:
-            print(f"Error in show_dashboard: {e}")
+            print(f"Error in show_login_screen: {e}")
             traceback.print_exc()
             
     def show_signup_screen(self):
@@ -138,61 +148,43 @@ class MakeaQuizApp:
             print(f"Error in show_dashboard: {e}")
             traceback.print_exc()
         
-        
-    def show_dashboard(self):
-        """Menampilkan dashboard admin"""
-        try:
-            if self.current_frame:
-                self.current_frame.destroy()
-            self.current_frame = Dashboard(
-                self.window, 
-                logout_callback=self.navigate_to_main_screen,
-                play_quiz_callback=self.navigate_to_play_quiz
-            )
-        except Exception as e:
-            print(f"Error in show_dashboard: {e}")
-            traceback.print_exc()
-    
     def show_play_quiz(self):
         """Menampilkan layar bermain quiz"""
         try:
             if self.current_frame:
                 self.current_frame.destroy()
             self.current_frame = PlayQuizScreen(
-                self.window,
+                parent=self.window, 
                 app_instance=self,
                 back_callback=self.navigate_to_main_screen
             )
+            self.audio.play_music("assets/audio/quiz_theme.mp3")
         except Exception as e:
             print(f"Error in show_play_quiz: {e}")
             traceback.print_exc()
-
-    def get_current_logged_in_user(self):
-        """Mendapatkan username pengguna yang sedang login."""
-        if self.user_instance:
-            return self.user_instance.get_current_user()
-        return None
-
-    def handle_admin_login(self, admin_instance):
-        """Menangani proses login admin."""
-        print("[Main.py] Admin login successful...")
-        self.admin_instance = admin_instance
-        self.navigate_to_dashboard()
-
+    
     def handle_user_logout(self):
-        """Menangani proses logout pengguna."""
-        print("[Main.py] User logout...")
-        if self.user_instance:
-            self.user_instance.logout()
-    
+         """Menangani proses logout pengguna."""
+         print("[Main.py] User logout...")
+         if self.user_instance:
+              self.user_instance.logout()
+
     # Fungsi navigasi antar layar
-    def navigate_to_main_screen(self):
-        """Navigasi ke layar utama"""
-        self.show_main_screen()
-    
-    def navigate_to_admin_login(self):
-        """Navigasi ke layar login admin"""
-        self.show_admin_login()
+    def navigate_to_main_screen(self, from_logout=False):
+        if self.admin_instance:
+             if hasattr(self.admin_instance, 'dashboard_instance') and self.admin_instance.dashboard_instance:
+                  self.admin_instance.back_to_main()
+             self.admin_instance = None
+        
+        if not from_logout and self.user_instance and self.get_current_logged_in_user():
+            self.handle_user_logout()
+            self.show_main_screen()
+        else:
+            if self.current_frame and self.current_frame.winfo_exists():
+                 print(f"[Main.py] Destroying current frame before showing main screen: {type(self.current_frame)}")
+                 self.current_frame.destroy()
+                 self.current_frame = None
+            self.show_main_screen()
     
     def navigate_to_login(self):
         """Navigasi ke layar login pengguna"""
@@ -202,35 +194,44 @@ class MakeaQuizApp:
         """Navigasi ke layar pendaftaran"""
         self.show_signup_screen()
         
-    def navigate_to_dashboard(self):
-        """Navigasi ke dashboard admin"""
-        self.show_dashboard()
-        
     def navigate_to_play_quiz(self):
         """Navigasi ke layar bermain quiz"""
         self.show_play_quiz()
 
-    def _create_ui(self):
-        # ... (existing code)
-        self.start_quiz_button = ctk.CTkButton(
-            # ...
-            fg_color="#3B82C4",  # Warna biru yang kontras
-            hover_color="#4F4698",  # Hover ke warna ungu
-        )
-        # ... (rest of the existing code)
+    def handle_admin_login(self):
+        """Dipanggil setelah login admin berhasil."""
+        print("[Main.py] Login admin berhasil, memanggil Admin.open_dashboard")
+        try:
+            if self.current_frame:
+                self.current_frame.destroy()
+                self.current_frame = None
+            
+            if not self.admin_instance:
+                 self.admin_instance = Admin(
+                    app=self, 
+                    show_login_callback=self.navigate_to_admin_login
+                 )
+            
+            self.admin_instance.open_dashboard()
+            
+            if hasattr(self.admin_instance, 'dashboard_instance'):
+                 self.current_frame = self.admin_instance.dashboard_instance
 
-    def _load_slides(self):
-        cover_frame = ctk.CTkFrame(self.slider_frame, fg_color="#4F4698", width=780, height=380)
+        except Exception as e:
+            print(f"Error handling admin login: {e}")
+            traceback.print_exc()
+            self.show_admin_login() 
 
-        title_label = ctk.CTkLabel(
-            # ...
-            text_color="#CFFBF6"  # Warna teks yang kontras (cyan terang)
-        )
+    # --- Metode Helper untuk User --- 
+    def get_current_logged_in_user(self):
+         """Mendapatkan username pengguna yang sedang login."""
+         if self.user_instance:
+              return self.user_instance.get_current_user()
+         return None
 
-        desc_label = ctk.CTkLabel(
-            # ...
-            text_color="#ABBBE5",  # Warna teks yang lebih lembut
-        )
+    def navigate_to_admin_login(self):
+        """Navigasi ke layar login admin"""
+        self.show_admin_login()
 
 if __name__ == "__main__":
     try:
