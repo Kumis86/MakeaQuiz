@@ -44,15 +44,16 @@ class Dashboard(ctk.CTkFrame):
             admin_buttons = [
                 # (Nama Tombol, Posisi Y, Nama Callback di dict self.callbacks)
                 ("Leaderboard", 89, "show_leaderboard"),
-                ("User Aktif", 150, "show_active_users"),
-                ("Upload Soal", 211, "show_upload_question"),
-                ("Tambah Pertanyaan", 272, "show_add_question"),
-                ("Lihat Pertanyaan", 333, "show_questions"),
-                ("Edit Pertanyaan", 394, "show_edit_question"),
-                ("Hapus Pertanyaan", 455, "show_delete_question"),
-                ("Manajemen User", 516, "show_user_management"),
-                ("Set Timer", 577, "show_set_timer"),
-                ("Kembali", 638, "logout")
+                ("User Aktif", 140, "show_active_users"),
+                ("Upload Soal", 191, "show_upload_question"),
+                ("Tambah Pertanyaan", 242, "show_add_question"),
+                ("Lihat Pertanyaan", 293, "show_questions"),
+                ("Edit Pertanyaan", 344, "show_edit_question"),
+                ("Cari Pertanyaan", 395, "show_search_question"),
+                ("Hapus Pertanyaan", 446, "show_delete_question"),
+                ("Manajemen User", 497, "show_user_management"),
+                ("Set Timer", 548, "show_set_timer"),
+                ("Kembali", 650, "logout")
             ]
             
             for text, y_pos, callback_key in admin_buttons:

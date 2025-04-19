@@ -31,7 +31,8 @@ class Admin:
             "show_edit_question": self.show_edit_question,
             "show_delete_question": self.show_delete_question,
             "show_set_timer": self.show_set_timer,
-            "show_user_management": self.show_user_management
+            "show_user_management": self.show_user_management,
+            "show_search_question": self.show_search_question
         }
 
         self.dashboard_instance = Dashboard(
@@ -554,14 +555,18 @@ class Admin:
         )
         delete_button.pack(pady=(30, 0), fill='x') # <<< Fill x
 
-    def read_questions(self):
+    def read_questions(self, keyword=None):
         questions = []
         if os.path.exists("database/quiz_questions.txt"):
             with open("database/quiz_questions.txt", "r") as file:
                 for line in file:
                     parts = line.strip().split("|")
                     q_type = parts[0].upper()  # Ubah ke uppercase untuk konsistensi
+                    question_text = parts[1].lower()
                     
+                    if keyword and keyword not in question_text:
+                        continue
+
                     if q_type == "ESSAY":
                         questions.append(f"Essay: {parts[1]} (Answer: {parts[2]})")
                     elif q_type == "MC":
@@ -892,6 +897,50 @@ class Admin:
                 except Exception as remove_e:
                     print(f"Failed to remove temporary file: {remove_e}")
             return False
+        
+    def show_search_question(self):
+        self._clear_content_area()
+        target_frame = self.dashboard_instance.content_area
+
+        # --- Frame utama untuk cari pertanyaan --- 
+        search_question_frame = ctk.CTkFrame(target_frame, fg_color="transparent")
+        search_question_frame.pack(expand=True, fill="both", padx=40, pady=30)
+
+        ctk.CTkLabel(search_question_frame, text="Cari Pertanyaan", font=("Inter Bold", 24)).pack(pady=(0, 20), anchor="w")
+
+        ctk.CTkLabel(search_question_frame, text="Masukkan Keyword Pertanyaan:", font=("Inter", 16)).pack(anchor="w", pady=(10,0))
+        self.search_question_entry = ctk.CTkEntry(
+            search_question_frame,
+            height=40,
+            font=("Inter", 14),
+            placeholder_text="Contoh: informatika"
+        )
+        self.search_question_entry.pack(fill="x", pady=5)
+
+        save_search_question_button = ctk.CTkButton(
+            search_question_frame,
+            text="Cari Pertanyaan",
+            font=("Inter Bold", 16),
+            height=50,
+            fg_color="#6357B1",
+            hover_color="#4F44A3",
+            command=self.search_question
+        )
+        save_search_question_button.pack(pady=(30, 0), fill='x')
+
+    def search_question(self):
+        keyword = self.search_question_entry.get().strip().lower()
+        if not keyword:
+            messagebox.showwarning("Peringatan", "Masukkan keyword untuk mencari pertanyaan.")
+            return
+
+        matching_questions = self.read_questions(keyword=keyword)
+
+        if matching_questions:
+            results = "\n\n".join(matching_questions)
+            messagebox.showinfo("Hasil Pencarian", f"Ditemukan {len(matching_questions)} pertanyaan:\n\n{results}")
+        else:
+            messagebox.showinfo("Hasil Pencarian", "Tidak ada pertanyaan yang cocok dengan keyword tersebut.")    
 
 if __name__ == "__main__":
     root = ctk.CTk()
