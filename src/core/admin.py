@@ -1,6 +1,9 @@
 import customtkinter as ctk
 from tkinter import messagebox, ttk
 import os
+from collections import defaultdict
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg            
 from src.utils.scraper import Scraper
 from src.core.questions import EssayQuestion, MCQuestion, TFQuestion
 from src.ui.dashboard import Dashboard
@@ -75,60 +78,183 @@ class Admin:
         self._clear_content_area()
         target_frame = self.dashboard_instance.content_area
 
-        leaderboard_data = []
+        # Read and categorize leaderboard data with proper mode mapping
+        leaderboard_data = {"MC": [], "TF": [], "ESSAY": []}
         leaderboard_file = "database/leaderboard.txt"
+        
+        # Mode translation dictionary
+        mode_mapping = {
+            "Pilihan Ganda": "MC",
+            "True/False": "TF",
+            "Essay": "ESSAY"
+        }
+
         if os.path.exists(leaderboard_file):
             try:
                 with open(leaderboard_file, "r") as file:
                     for line in file:
                         if line.strip():
                             parts = line.strip().split("|")
-                            # Pastikan formatnya benar
-                            if len(parts) >= 2:
-                                username = parts[0]
+                            if len(parts) >= 4:
                                 try:
-                                    score = int(parts[1])
-                                    total_q = parts[2] if len(parts) > 2 else 'N/A'
-                                    mode = parts[3] if len(parts) > 3 else 'N/A'
-                                    leaderboard_data.append({
-                                        "username": username,
-                                        "score": score,
-                                        "total_q": total_q,
-                                        "mode": mode
-                                    })
-                                except ValueError:
-                                    print(f"Skipping leaderboard line due to invalid score: {line.strip()}")
-                            else:
-                                print(f"Skipping leaderboard line due to incorrect format: {line.strip()}")
+                                    raw_mode = parts[3].strip()
+                                    quiz_type = mode_mapping.get(raw_mode, None)
+                                    
+                                    if not quiz_type:
+                                        continue  # Skip unknown types
+                                        
+                                    entry = {
+                                        "username": parts[0],
+                                        "score": int(parts[1]),
+                                        "total_q": parts[2],
+                                        "mode": quiz_type
+                                    }
+                                    leaderboard_data[quiz_type].append(entry)
+                                except (ValueError, IndexError) as e:
+                                    print(f"Skipping invalid line: {line.strip()} - {str(e)}")
             except Exception as e:
                 print(f"Error reading leaderboard file: {e}")
-                messagebox.showerror("Error", f"Gagal membaca file leaderboard: {e}")
+                messagebox.showerror("Error", f"Failed to read leaderboard file: {e}")
 
-        # Urutkan data berdasarkan skor (tertinggi dulu)
-        leaderboard_data.sort(key=lambda item: item['score'], reverse=True)
+        # Sort each category by score descending
+        for category in leaderboard_data:
+            leaderboard_data[category].sort(key=lambda x: x['score'], reverse=True)
 
-        # Siapkan Treeview
-        columns = ("#1", "#2", "#3", "#4")
-        table = ttk.Treeview(target_frame, columns=columns, show="headings")
+        # Figure tracking
+        self.current_figure = None
+
+        # Create main container
+        main_container = ctk.CTkFrame(target_frame)
+        main_container.pack(expand=True, fill="both")
+
+        # Category selector with translated labels
+        category_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        category_frame.pack(pady=10, fill="x")
+        
+        self.current_category = ctk.StringVar(value="MC")
+        category_selector = ctk.CTkSegmentedButton(
+            category_frame,
+            values=["MC", "TF", "ESSAY"],
+            variable=self.current_category,
+            command=lambda _: self._update_leaderboard_display(leaderboard_data),
+        )
+        category_selector.pack(padx=20, pady=5)
+
+        # Table and graph container
+        content_container = ctk.CTkFrame(main_container)
+        content_container.pack(expand=True, fill="both")
+        content_container.grid_rowconfigure(0, weight=3)
+        content_container.grid_rowconfigure(1, weight=1)
+        content_container.grid_columnconfigure(0, weight=1)
+
+        # Create frames
+        self.table_frame = ctk.CTkFrame(content_container)
+        self.table_frame.grid(row=0, column=0, sticky="nsew")
+        
+        self.graph_frame = ctk.CTkFrame(content_container)
+        self.graph_frame.grid(row=1, column=0, sticky="nsew")
+
+        # Initial display
+        self._update_leaderboard_display(leaderboard_data)
+
+    def _update_leaderboard_display(self, leaderboard_data):
+        # Clear previous widgets and figures
+        if self.current_figure:
+            plt.close(self.current_figure)
+        
+        for widget in self.table_frame.winfo_children():
+            widget.destroy()
+        for widget in self.graph_frame.winfo_children():
+            widget.destroy()
+
+        category = self.current_category.get()
+        raw_data = leaderboard_data.get(category, [])
+        
+        # Process data for display - keep all entries sorted
+        sorted_data = sorted(raw_data, key=lambda x: x['score'], reverse=True)
+        table_data = sorted_data  # All data for table
+        graph_data = sorted_data[:10]  # Top 10 for graph
+
+        # Create table with attempt numbers
+        columns = ("#1", "#2", "#3", "#4", "#5")
+        table = ttk.Treeview(self.table_frame, columns=columns, show="headings")
+        
+        # Configure columns
         table.heading("#1", text="Peringkat")
         table.heading("#2", text="Username")
         table.heading("#3", text="Skor")
-        table.heading("#4", text="Mode Kuis") # Tambah kolom mode
-
-        # Sesuaikan lebar kolom (opsional)
-        table.column("#1", width=80, anchor='center')
-        table.column("#2", width=200)
-        table.column("#3", width=100, anchor='center')
-        table.column("#4", width=150)
-
-        # Masukkan data yang sudah diurutkan ke tabel
-        for i, data in enumerate(leaderboard_data):
-            peringkat = i + 1
-            # Format skor mungkin perlu disesuaikan (misal: "score/total_q")
-            skor_display = f"{data['score']}/{data['total_q']}"
-            table.insert("", "end", values=(peringkat, data['username'], skor_display, data['mode']))
+        table.heading("#4", text="Total Soal")
+        table.heading("#5", text="Attempt #")
+        
+        # Track attempts per user for numbering
+        attempt_counts = defaultdict(int)
+        
+        # Populate table with ALL attempts
+        for i, entry in enumerate(table_data):
+            attempt_counts[entry['username']] += 1
+            values = (
+                i + 1,
+                entry['username'],
+                f"{entry['score']}/{entry['total_q']}",
+                entry['total_q'],
+                attempt_counts[entry['username']]
+            )
+            table.insert("", "end", values=values)
 
         table.pack(expand=True, fill="both", padx=20, pady=20)
+
+        # Create graph with top 10 attempts
+        try:
+            fig, ax = plt.subplots(figsize=(8, 3.5))
+            self.current_figure = fig  # Track current figure
+            
+            fig.patch.set_facecolor('#2B2B2B')
+            ax.set_facecolor('#2B2B2B')
+            
+            if graph_data:
+                # Create labels with attempt numbers
+                labels = [f"{entry['username']} (#{i+1})" 
+                        for i, entry in enumerate(graph_data)]
+                scores = [entry['score'] for entry in graph_data]
+                
+                bars = ax.bar(labels, scores, color='#6357B1')
+                ax.set_title(f"Top 10 Skor {self._translate_category(category)}", 
+                           color='white', pad=15, fontsize=12)
+                ax.set_ylabel('Skor', color='white', fontsize=10)
+                ax.tick_params(axis='both', colors='white', labelsize=8)
+                plt.xticks(rotation=45, ha='right', fontsize=8)
+                
+                # Add value labels
+                for bar in bars:
+                    height = bar.get_height()
+                    ax.text(bar.get_x() + bar.get_width()/2., height,
+                            f'{height}', ha='center', va='bottom',
+                            color='white', fontsize=8)
+            else:
+                ax.text(0.5, 0.5, 'Tidak ada data untuk kategori ini',
+                      ha='center', va='center', 
+                      color='white', fontsize=10)
+
+            plt.tight_layout()
+            
+            # Embed graph
+            canvas = FigureCanvasTkAgg(fig, master=self.graph_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill='both', expand=True, padx=20, pady=10)
+            
+        except ImportError:
+            error_label = ctk.CTkLabel(self.graph_frame, 
+                                     text="Install matplotlib: 'pip install matplotlib'",
+                                     text_color="#FF5555")
+            error_label.pack(pady=20)
+
+    def _translate_category(self, category):
+        translations = {
+            "MC": "Pilihan Ganda",
+            "TF": "True/False",
+            "ESSAY": "Essay"
+        }
+        return translations.get(category, category)
 
     def show_add_question(self):
         self._clear_content_area()
