@@ -57,6 +57,7 @@ class MakeaQuizApp:
             
             # Membuat jendela utama
             self.window = ctk.CTk()
+            self.window.protocol("WM_DELETE_WINDOW", self.on_close)
             self.window.geometry(f"{self.config.width}x{self.config.height}")
             self.window.title(self.config.app_name)
             self.window.resizable(False, False)
@@ -69,6 +70,21 @@ class MakeaQuizApp:
         except Exception as e:
             print(f"Error in initialize_app: {e}")
             traceback.print_exc()
+
+    def on_close(self):
+        """Handle application shutdown"""
+        # Stop pygame audio
+        if pygame.mixer.get_init():
+            pygame.mixer.music.stop()
+            pygame.mixer.quit()
+        
+        # Close any matplotlib figures
+        import matplotlib.pyplot as plt
+        plt.close('all')
+        
+        # Destroy the window
+        self.window.destroy()
+        sys.exit(0)
     
     def show_splash_screen(self):
         """Menampilkan splash screen"""

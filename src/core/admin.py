@@ -158,10 +158,10 @@ class Admin:
         self._update_leaderboard_display(leaderboard_data)
 
     def _update_leaderboard_display(self, leaderboard_data):
-        # Clear previous widgets and figures
-        if self.current_figure:
+        # Clear previous widgets and figures 
+        if hasattr(self, 'current_figure') and self.current_figure:
             plt.close(self.current_figure)
-        
+
         for widget in self.table_frame.winfo_children():
             widget.destroy()
         for widget in self.graph_frame.winfo_children():
@@ -205,11 +205,9 @@ class Admin:
 
         # Create graph with top 10 attempts
         try:
-            fig, ax = plt.subplots(figsize=(8, 3.5))
-            self.current_figure = fig  # Track current figure
-            
-            fig.patch.set_facecolor('#2B2B2B')
-            ax.set_facecolor('#2B2B2B')
+            self.current_figure, ax = plt.subplots(figsize=(8, 3.5))   
+            self.current_figure.patch.set_facecolor('#2B2B2B')
+            ax.set_facecolor('#2B2B2B')    
             
             if graph_data:
                 # Create labels with attempt numbers
@@ -238,7 +236,7 @@ class Admin:
             plt.tight_layout()
             
             # Embed graph
-            canvas = FigureCanvasTkAgg(fig, master=self.graph_frame)
+            canvas = FigureCanvasTkAgg(self.current_figure, master=self.graph_frame)
             canvas.draw()
             canvas.get_tk_widget().pack(fill='both', expand=True, padx=20, pady=10)
             
@@ -828,9 +826,12 @@ class Admin:
 
     def handle_dashboard_logout(self):
         if self.dashboard_instance:
+            # Cleanup matplotlib figures
+            if hasattr(self, 'current_figure') and self.current_figure:
+                plt.close(self.current_figure)
+                self.current_figure = None
             self.dashboard_instance.destroy()
             self.dashboard_instance = None
-        
         self.show_login_callback()
 
     def back_to_main(self):
