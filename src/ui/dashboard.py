@@ -1,5 +1,6 @@
 # src/gui/dashboard.py
 import customtkinter as ctk
+from tkinter import messagebox
 
 class Dashboard(ctk.CTkFrame):
     """Dashboard screen for the application"""
@@ -50,6 +51,7 @@ class Dashboard(ctk.CTkFrame):
                 ("Lihat Pertanyaan", 293, "show_questions"),
                 ("Edit Pertanyaan", 344, "show_edit_question"),
                 ("Cari Pertanyaan", 395, "show_search_question"),
+                ("Cari User", 599, "show_search_user"),
                 ("Hapus Pertanyaan", 446, "show_delete_question"),
                 ("Manajemen User", 497, "show_user_management"),
                 ("Set Timer", 548, "show_set_timer"),
@@ -128,6 +130,7 @@ class Dashboard(ctk.CTkFrame):
                  font=("Inter", 18)
             )
             info_label.pack(pady=10, padx=30)
+
 
             # Hapus panel-panel contoh lama
             # user_panel = ctk.CTkFrame(...)

@@ -57,6 +57,7 @@ class User:
             print(f"Error reading user file: {e}")
             messagebox.showerror("Database Error", f"Gagal membaca data pengguna: {e}")
         return lines
+    
 
     def _write_users_raw(self, lines):
         """Menulis ulang file database dengan baris yang diberikan."""
@@ -260,3 +261,10 @@ class User:
         else:
             # Error sudah ditampilkan oleh _write_users_raw
             return False
+def search_user(username):
+    with open("database/user.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            user, _ = line.strip().split(",", 1)
+            if user.lower() == username.lower():
+                return True
+    return False

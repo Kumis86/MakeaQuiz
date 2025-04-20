@@ -4,6 +4,7 @@ import os
 from src.utils.scraper import Scraper
 from src.core.questions import EssayQuestion, MCQuestion, TFQuestion
 from src.ui.dashboard import Dashboard
+from src.core.user import search_user
 
 ADMIN_PASSWORD = "admin123"
 
@@ -32,7 +33,8 @@ class Admin:
             "show_delete_question": self.show_delete_question,
             "show_set_timer": self.show_set_timer,
             "show_user_management": self.show_user_management,
-            "show_search_question": self.show_search_question
+            "show_search_question": self.show_search_question,
+            "show_search_user": self.show_search_user_screen
         }
 
         self.dashboard_instance = Dashboard(
@@ -941,6 +943,76 @@ class Admin:
             messagebox.showinfo("Hasil Pencarian", f"Ditemukan {len(matching_questions)} pertanyaan:\n\n{results}")
         else:
             messagebox.showinfo("Hasil Pencarian", "Tidak ada pertanyaan yang cocok dengan keyword tersebut.")    
+   
+    def show_search_user_screen(self):
+           self._clear_content_area()
+           target_frame = self.dashboard_instance.content_area
+           
+           search_user_frame = ctk.CTkFrame(target_frame, fg_color="transparent")
+           search_user_frame.pack(expand=True, fill="both", padx=40, pady=30)
+           
+           # ==== JUDUL ====
+           title_label = ctk.CTkLabel(
+                search_user_frame,
+                text="🔎Cari pengguna berdasarkan Username",
+                font=("Inter Bold", 24),
+            )
+           title_label.pack(pady=(30, 5), anchor="w")
+           
+           # ==== LABEL + ENTRY ====
+           input_label = ctk.CTkLabel(
+               search_user_frame,
+               text ="Masukkan Username yang ingin dicari ",
+               font=("Inter", 16)
+           )
+           input_label.pack(anchor="w", pady=(0,5))
+
+           self.search_entry = ctk.CTkEntry(
+                search_user_frame,
+                height=40,
+                font=("Inter", 14),
+                placeholder_text="Contoh: budi123"
+            )
+           self.search_entry.pack(fill="x", pady=(0, 15))
+           
+           # ==== TOMBOL CARI ====
+           search_button = ctk.CTkButton(
+                search_user_frame,
+                text="Cari Sekarang",
+                height=40,
+                font=("Inter Bold", 14),
+                fg_color="#6357B1",
+                hover_color="#4F44A3",
+                command=self._handle_search
+            )
+           search_button.pack(pady=(0, 20), anchor="e")
+           
+           #=== HASIL PENCARIAN===
+           self.result_label = ctk.CTkLabel(
+                search_user_frame,
+                text="",  # kosong dulu, nanti diisi setelah search
+                font=("Inter", 14),
+                text_color="gray"
+            )
+           self.result_label.pack(anchor="w", pady=(10, 0))
+
+
+    def _handle_search(self):
+        username = self.search_entry.get()
+        if not username:
+            messagebox.showwarning("Peringatan", "Masukkan username yang ingin dicari.")
+            return
+
+        if search_user(username):
+            self.result_label.configure(
+                text=f"✅ Username '{username}' ditemukan.",
+                text_color="green"
+            )
+        else:   
+            self.result_label.configure(
+                text=f"❌ Username '{username}' tidak ditemukan.",
+                text_color="red"
+            )
 
 if __name__ == "__main__":
     root = ctk.CTk()
