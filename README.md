@@ -12,51 +12,51 @@
 ## ✨ Fitur
 
 - 🎯 **Autentikasi Pengguna**
- - Sistem login dan registrasi yang aman
- - Validasi kekuatan kata sandi
- - Manajemen profil pengguna
+  - Sistem login dan registrasi yang aman
+  - Validasi kekuatan kata sandi
+  - Manajemen profil pengguna
 
 - 👨‍💼 **Dashboard Admin**
- - Manajemen kuis yang lengkap
- - Statistik dan analitik pengguna
- - Alat moderasi konten
+  - Manajemen kuis yang lengkap
+  - Statistik dan analitik pengguna
+  - Alat moderasi konten
 
 - 🎲 **Fitur Kuis**
- - Antarmuka kuis interaktif
- - Penilaian skor secara real-time
- - Musik latar dan efek suara
- - Pelacakan progres kuis
+  - Antarmuka kuis interaktif
+  - Penilaian skor secara real-time
+  - Musik latar dan efek suara
+  - Pelacakan progres kuis
 
 - 🎨 **UI/UX Modern**
- - Tema gelap yang elegan
- - Desain responsif
- - Transisi yang halus
- - Navigasi intuitif
+  - Tema gelap yang elegan
+  - Desain responsif
+  - Transisi yang halus
+  - Navigasi intuitif
 
 ## 🚀 Memulai
 
 ### Prasyarat
 
-- Python 3. 8 atau lebih baru
+- Python 3.8 atau lebih baru
 - pip (pengelola paket Python)
 
 ### Instalasi
 
 1. Kloning repositori:
-bash
+```bash
 git clone https://github.com/kumis86/MakeaQuiz.git
 cd MakeaQuiz
-
+```
 
 2. Instal dependensi yang diperlukan:
-bash
+```bash
 pip install -r requirements.txt
+```
 
-
-3. Jalankan aplikasi. Jalankan aplikasi:
-bash
+3. Jalankan aplikasi:
+```bash
 python main.py
-
+```
 
 ## 💻 Penggunaan
 
@@ -64,22 +64,37 @@ python main.py
 1. Luncurkan aplikasi
 2. Pilih "User Login" dari menu utama
 3. Buat akun atau login dengan kredensial yang ada
-4. Klik "Login Mulai mengikuti kuis!
+4. Mulai mengikuti kuis!
 
 ### Untuk Administrator
 1. Luncurkan aplikasi
-2. Masuk ke menu utama Pilih "Login Admin" dari menu   utama
-3. Buat akun atau login Masukkan kredensial admin
-4. Klik "Login Akses dasbor admin untuk mengelola kuis dan pengguna
+2. Pilih "Login Admin" dari menu utama
+3. Masukkan kredensial admin
+4. Akses dasbor admin untuk mengelola kuis dan pengguna
 
 ## 🛠️ Dibangun dengan
 
+- [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) - Framework UI modern
+- [Python-docx](https://python-docx.readthedocs.io/) - Penanganan dokumen
+- [bcrypt](https://github.com/pyca/bcrypt/) - Hashing kata sandi
+- [Pygame](https://www.pygame.org/) - Manajemen audio
 
-- [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) - Modern UI framework
-- [Python-docx](https://python-docx.readthedocs.io/) - Document handling
-- [bcrypt](https://github.com/pyca/bcrypt/) - Password hashing
-- [Pygame](https://www.pygame.org/) - Audio management
+## 📁 Struktur Proyek
 
+```
+MakeaQuiz/
+├── assets/
+│   ├── audio/
+│   └── images/
+├── database/
+├── src/
+│   ├── core/
+│   ├── ui/
+│   └── utils/
+├── main.py
+├── requirements.txt
+└── README.md
+```
 
 ## 🔒 Fitur Keamanan
 
@@ -103,13 +118,12 @@ Kontribusi dipersilakan! Silakan kirimkan Pull Request.
 
 Proyek ini dilisensikan di bawah Lisensi MIT - lihat file [LICENSE](LICENSE) untuk detailnya.
 
-
-## Authors
+## 👥 Penulis
 
 - [@kumis86](https://www.github.com/kumis86)
 - [@Dimasartha](https://github.com/Dimasartha)
 - [@SastraWiradisastra](https://github.com/SastraWiradisastra)
-- [Lia2406@](https://github.com/Lia2406)
+- [@Lia2406](https://github.com/Lia2406)
 
 ## 🙏 Ucapan Terima Kasih
 
@@ -118,7 +132,7 @@ Proyek ini dilisensikan di bawah Lisensi MIT - lihat file [LICENSE](LICENSE) unt
 - Seluruh kontributor dan penguji
 
 ---
----
----
+
+Dibuat dengan ❤️ oleh Tim Pengembang MakeaQuiz
 
 
