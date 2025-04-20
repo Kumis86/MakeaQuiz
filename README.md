@@ -38,7 +38,7 @@
 ### Prasyarat
 
 - Python 3. 8 atau lebih baru
-- pip (pengelola paket Pytho
+- pip (pengelola paket Python)
 
 ### Instalasi
 
