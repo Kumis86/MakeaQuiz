@@ -1,2 +1,30 @@
-TF|apakah informatika menyenangkan?|True
-MC|10 adalah?|1 + 9|5 + 5|3 + 7|Semuanya Benar|3
+TF|Python merupakan bahasa pemrograman yang dikompilasi.|False
+TF|Fungsi utama dari loop adalah untuk menjalankan perintah secara berulang.|True
+TF|Boolean hanya memiliki tiga nilai: True, False, dan Null.|False
+TF|Di dalam struktur if-elif-else, hanya satu blok yang akan dieksekusi.|True
+TF|Bahasa pemrograman Java dikembangkan oleh Microsoft.|False
+TF|Fungsi input() dalam Python digunakan untuk menerima data dari pengguna.|True
+TF|Komentar dalam bahasa C diawali dengan tanda //. |True
+TF|Perintah 'continue' digunakan untuk keluar dari sebuah loop.|False
+TF|Python menggunakan indentasi untuk menentukan blok kode.|True
+TF|Array di C bersifat dinamis dan dapat berubah ukuran.|False
+MC|Apa output dari perintah print(2**3) di Python?|5|6|8|9|2
+MC|Bahasa pemrograman manakah yang biasa digunakan untuk pengembangan web frontend?|Python|C++|JavaScript|SQL|2
+MC|Manakah yang bukan operator logika dalam Python?|and|or|not|xor|3
+MC|Fungsi dari return dalam sebuah fungsi adalah?|Menyimpan data|Mengakhiri fungsi dan mengembalikan nilai|Menampilkan data|Melanjutkan loop|1
+MC|Apa hasil dari 10 % 3?|0|1|2|3|1
+MC|Struktur data yang mengikuti prinsip FIFO adalah?|Stack|Queue|Tree|Graph|1
+MC|Apa ekstensi umum untuk file Python?|.java|.py|.txt|.cpp|1
+MC|Manakah yang termasuk ke dalam tipe data numerik di Python?|str|bool|int|list|2
+MC|Manakah dari berikut ini bukan merupakan jenis perulangan di Python?|for|while|do-while|loop|2
+MC|Fungsi dari def dalam Python adalah untuk?|Membuat variabel|Membuat kondisi|Membuat fungsi|Membuat class|2
+ESSAY|Apa perbedaan mendasar antara bahasa pemrograman terkompilasi dan terinterpretasi?|Bahasa terkompilasi diterjemahkan seluruhnya sebelum dijalankan, sedangkan terinterpretasi dijalankan baris per baris.
+ESSAY|Jelaskan konsep dasar dari sebuah fungsi rekursif.|Fungsi rekursif memanggil dirinya sendiri hingga mencapai kondisi dasar.
+ESSAY|Apa itu syntax dalam konteks pemrograman?|Syntax adalah aturan penulisan kode yang harus diikuti agar program dapat dijalankan.
+ESSAY|Jelaskan bagaimana cara kerja struktur data stack.|Stack bekerja dengan prinsip LIFO, yaitu elemen terakhir masuk adalah yang pertama keluar.
+ESSAY|Apa yang dimaksud dengan debugging dan mengapa penting?|Debugging adalah proses menemukan dan memperbaiki error pada program agar berjalan dengan benar.
+ESSAY|Jelaskan apa yang dimaksud dengan parameter dan argumen dalam fungsi.|Parameter adalah variabel dalam definisi fungsi, argumen adalah nilai yang dikirim saat fungsi dipanggil.
+ESSAY|Berikan contoh penggunaan perulangan while dalam Python.|Contoh: while x < 5: print(x); x += 1
+ESSAY|Apa yang dimaksud dengan exception handling?|Teknik untuk menangani error yang mungkin terjadi selama eksekusi program.
+ESSAY|Jelaskan tujuan penggunaan komentar dalam kode program.|Untuk memberikan penjelasan tambahan agar kode mudah dipahami.
+ESSAY|Apa itu IDE dan sebutkan dua contohnya.|IDE adalah lingkungan pengembangan perangkat lunak. Contoh: PyCharm, Visual Studio Code.

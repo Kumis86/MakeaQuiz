@@ -16,3 +16,6 @@ Amalia|0|1|Pilihan Ganda
 Amalia|1|1|Pilihan Ganda
 Amalia|0|1|Pilihan Ganda
 Amalia|1|1|Pilihan Ganda
+Amalia|6|10|Pilihan Ganda
+Amalia|7|10|Pilihan Ganda
+Amalia|6|10|True/False
