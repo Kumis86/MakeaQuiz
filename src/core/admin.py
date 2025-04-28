@@ -919,18 +919,18 @@ class Admin:
              self.user_table.insert("", "end", iid=user_data['line_index'], values=(user_data['username'],))
         
         # Reset tombol hapus
-        if hasattr(self, 'delete_user_button'):
-             self.delete_user_button.configure(state="disabled")
+        if hasattr(self, 'delete_user_button') and self.delete_user_button.winfo_exists():
+            self.delete_user_button.configure(state="disabled")
 
     def on_user_select(self, event=None):
         """Dipanggil saat pengguna dipilih di tabel."""
         selected_items = self.user_table.selection()
         if selected_items: # Jika ada item yang dipilih
-            if hasattr(self, 'delete_user_button'):
-                 self.delete_user_button.configure(state="normal") # Aktifkan tombol hapus
+            if hasattr(self, 'delete_user_button') and self.delete_user_button.winfo_exists():
+                self.delete_user_button.configure(state="normal")
         else:
-             if hasattr(self, 'delete_user_button'):
-                  self.delete_user_button.configure(state="disabled") # Nonaktifkan jika tidak ada pilihan
+            if hasattr(self, 'delete_user_button') and self.delete_user_button.winfo_exists():
+                self.delete_user_button.configure(state="disabled")
 
     def confirm_delete_user(self):
         """Meminta konfirmasi sebelum menghapus pengguna."""

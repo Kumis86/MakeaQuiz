@@ -45,6 +45,18 @@ class User:
             return True # Anggap ada error sebagai username sudah ada untuk mencegah duplikasi
         return False
 
+    def _check_email_exists(self, email):
+        try:
+            with open(self.db_file, 'r') as f:
+                for line in f:
+                    parts = line.strip().split(",", 2)
+                    if len(parts) == 3 and parts[2].lower() == email.lower():
+                        return True
+        except Exception as e:
+            print(f"Error checking email: {e}")
+            messagebox.showerror("Database Error", f"Terjadi kesalahan saat memeriksa email: {e}")
+        return False
+
     def _read_users_raw(self):
         """Membaca semua baris mentah dari file database pengguna."""
         lines = []
@@ -75,37 +87,15 @@ class User:
                 except Exception as remove_e: print(f"Failed to remove temp file: {remove_e}")
             return False
 
-    def register(self, username, password):
+    def register(self, username, password, email):
         """Mendaftarkan pengguna baru dengan password yang di-hash."""
-        # Validasi input dasar
-        if not username or not password:
-            messagebox.showerror("Registrasi Gagal", "Username dan password tidak boleh kosong.")
-            return False # <<< Kembalikan False jika gagal
-
-        # Periksa panjang minimal (opsional)
-        if len(username) < 3 or len(password) < 5:
-             messagebox.showerror("Registrasi Gagal", "Username minimal 3 karakter dan password minimal 5 karakter.")
-             return False
-
-        # Periksa apakah username sudah ada
-        if self._check_username_exists(username):
-            messagebox.showerror("Registrasi Gagal", f"Username '{username}' sudah terdaftar. Silakan gunakan username lain.")
-            return False
-
-        # Validasi Kekuatan Password (Jika metode is_valid_password ada)
-        if hasattr(self, 'is_valid_password'):
-            is_valid, message = self.is_valid_password(password)
-        if not is_valid:
-                  messagebox.showerror("Registrasi Gagal", message)
-                  return False
-
         # Hash password
         hashed_password = self._hash_password(password)
 
         # Simpan ke file
         try:
             with open(self.db_file, 'a') as f:
-                f.write(f"{username},{hashed_password}\n")
+                f.write(f"{username},{hashed_password},{email}\n")
             messagebox.showinfo("Registrasi Berhasil", f"Akun untuk '{username}' berhasil dibuat. Silakan login.")
             return True # <<< Kembalikan True jika berhasil
         except Exception as e:
@@ -123,15 +113,17 @@ class User:
             lines = self._read_users_raw()
             for line in lines:
                  if line.strip():
-                     stored_username, stored_hashed_password = line.strip().split(",", 1)
-                     if stored_username == username:
-                         input_hashed_password = self._hash_password(password)
-                         if input_hashed_password == stored_hashed_password:
-                             self.logged_in_username = username # <<< Simpan username
-                             return True # Login sukses
-                         else:
-                             messagebox.showerror("Login Gagal", "Password salah.")
-                             return False # Password salah
+                     parts = line.strip().split(",", 2)
+                     if len(parts) >= 2:
+                        stored_username, stored_hashed_password = parts[0], parts[1]
+                        if stored_username == username:
+                            input_hashed_password = self._hash_password(password)
+                            if input_hashed_password == stored_hashed_password:
+                                self.logged_in_username = username # <<< Simpan username
+                                return True # Login sukses
+                            else:
+                                messagebox.showerror("Login Gagal", "Password salah.")
+                                return False # Password salah
             # Jika loop selesai tanpa menemukan username
             messagebox.showerror("Login Gagal", f"Username '{username}' tidak ditemukan.")
             return False
@@ -151,6 +143,19 @@ class User:
     def get_current_user(self):
         """Mengembalikan username pengguna yang sedang login."""
         return self.logged_in_username
+    
+    def get_username_by_email(self, email):
+        """Mengembalikan username berdasarkan email, jika ditemukan."""
+        try:
+            lines = self._read_users_raw()
+            for line in lines:
+                parts = line.strip().split(",", 2)
+                if len(parts) == 3 and parts[2].lower() == email.lower():
+                    return parts[0]  # username
+        except Exception as e:
+            print(f"Error getting username from email: {e}")
+            messagebox.showerror("Database Error", f"Gagal mencari username dari email: {e}")
+        return None
 
     def is_valid_password(self, password):
         """Memeriksa apakah password memenuhi kriteria keamanan"""

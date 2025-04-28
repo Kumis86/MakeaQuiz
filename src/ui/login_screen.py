@@ -1,6 +1,9 @@
 import customtkinter as ctk
 from src.utils.assets import AssetManager
 from PIL import Image
+from src.utils.verifikasi import send_otp
+from src.ui.signup_screen import SignupScreen
+from tkinter import messagebox
 
 class LoginScreen(ctk.CTkFrame):
     def __init__(self, parent, user_instance, login_callback, signup_callback, back_callback, user_callback):
@@ -80,6 +83,20 @@ class LoginScreen(ctk.CTkFrame):
         )
         self.toggle_button.place(relx=0.88, rely=0.55, anchor="center")
 
+        forgot_button = ctk.CTkButton(
+            self,
+            text="Lupa Password?",
+            font=("Inter", 14, "underline"),
+            fg_color="transparent",
+            text_color="#5F9EA0",  # Warna biru
+            hover_color="#444444",
+            cursor="hand2",
+            width=180,
+            height=30,
+            command=self.forgot_password
+        )
+        forgot_button.place(relx=0.75, rely=0.62, anchor="center")
+
         # --- Frame untuk tombol Login & Register --- 
         auth_buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
         auth_buttons_frame.place(relx=0.75, rely=0.7, anchor="center")
@@ -129,6 +146,119 @@ class LoginScreen(ctk.CTkFrame):
         """Fungsi untuk menampilkan atau menyembunyikan password."""
         self.show_password = not self.show_password
         self.password_entry.configure(show="" if self.show_password else "•")
+
+    def forgot_password(self):
+        # Langkah 1: Popup untuk minta email
+        email_window = ctk.CTkToplevel(self)
+        email_window.title("Lupa Password")
+        email_window.geometry("450x250")
+        email_window.resizable(False, False)
+        email_window.transient(self.parent)
+        email_window.grab_set()
+
+        frame = ctk.CTkFrame(email_window, fg_color="transparent")
+        frame.pack(expand=True, fill="both", padx=20, pady=20)
+
+        ctk.CTkLabel(frame, text="Masukkan Email Terdaftar", font=("Inter Bold", 20)).pack(pady=(0, 20))
+        email_entry = ctk.CTkEntry(frame, width=380, height=40)
+        email_entry.pack(pady=(0, 15), fill="x", padx=10)
+
+        def kirim_otp():
+            email_value = email_entry.get().strip()
+
+            if not email_value or "@" not in email_value or "." not in email_value:
+                messagebox.showerror("Error", "Format email tidak valid.")
+                return
+
+            if not self.user_instance._check_email_exists(email_value):
+                messagebox.showerror("Error", f"Email '{email_value}' tidak ditemukan di database.")
+                return
+            
+            username_found = self.user_instance.get_username_by_email(email_value)
+            if not username_found:
+                messagebox.showerror("Error", "Username untuk email tersebut tidak ditemukan.")
+                return
+
+            # Kirim OTP
+            otp = send_otp(email_value, username_found)
+            if not otp:
+                messagebox.showerror("Gagal", "Gagal mengirim OTP ke email.")
+                return
+
+            # Tutup form email
+            email_window.destroy()
+
+            # Lanjutkan ke OTP verification
+            def lanjut_reset():
+                self.open_password_reset(email_value)
+
+            # Panggil OTP popup dari SignupScreen (jika kamu ingin reuse)
+            temp_signup = SignupScreen(self.parent, self.user_instance, self.user_callback)
+            temp_signup.open_otp(expected_otp=otp, on_success=lanjut_reset)
+
+        kirim_btn = ctk.CTkButton(
+            frame, text="Kirim OTP", font=("Inter Bold", 14),
+            command=kirim_otp, fg_color="#6357B1", hover_color="#4F44A3"
+        )
+        kirim_btn.pack(pady=10)
+
+
+    def open_password_reset(self, email):
+        reset_window = ctk.CTkToplevel(self)
+        reset_window.title("Reset Password")
+        reset_window.geometry("450x350")
+        reset_window.resizable(False, False)
+        reset_window.transient(self.parent)
+        reset_window.grab_set()
+
+        frame = ctk.CTkFrame(reset_window, fg_color="transparent")
+        frame.pack(expand=True, fill="both", padx=20, pady=20)
+
+        ctk.CTkLabel(frame, text="Buat Password Baru", font=("Inter Bold", 20)).pack(pady=(0, 20))
+
+        new_pw_entry = ctk.CTkEntry(frame, placeholder_text="Password Baru", show="•", width=380)
+        new_pw_entry.pack(pady=10)
+
+        confirm_pw_entry = ctk.CTkEntry(frame, placeholder_text="Konfirmasi Password", show="•", width=380)
+        confirm_pw_entry.pack(pady=10)
+
+        def reset_password():
+            new_pw = new_pw_entry.get()
+            confirm_pw = confirm_pw_entry.get()
+
+            if new_pw != confirm_pw:
+                messagebox.showerror("Error", "Password dan konfirmasi tidak cocok.")
+                return
+
+            is_valid, msg = self.user_instance.is_valid_password(new_pw)
+            if not is_valid:
+                messagebox.showerror("Password Lemah", msg)
+                return
+
+            # Update password di file
+            lines = self.user_instance._read_users_raw()
+            updated = False
+            for i, line in enumerate(lines):
+                parts = line.strip().split(",", 2)
+                if len(parts) == 3 and parts[2].lower() == email.lower():
+                    hashed = self.user_instance._hash_password(new_pw)
+                    lines[i] = f"{parts[0]},{hashed},{parts[2]}\n"
+                    updated = True
+                    break
+
+            if updated and self.user_instance._write_users_raw(lines):
+                messagebox.showinfo("Sukses", "Password berhasil diperbarui.")
+                reset_window.destroy()
+                self.user_callback()  # Kembali ke tampilan login
+            else:
+                messagebox.showerror("Gagal", "Gagal menyimpan password baru.")
+
+        submit_btn = ctk.CTkButton(
+            frame, text="Simpan Password", font=("Inter Bold", 14),
+            command=reset_password, fg_color="#6357B1", hover_color="#4F44A3"
+        )
+        submit_btn.pack(pady=15)
+
 
     def on_login(self):
         username = self.username_entry.get()
