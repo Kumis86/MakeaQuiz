@@ -182,7 +182,7 @@ class Scraper:
                 valid_questions.append(line)
             
             # Simpan soal yang valid
-            with open("quiz_questions.txt", "w", encoding="utf-8") as quiz_file:
+            with open("database/quiz_questions.txt", "w", encoding="utf-8") as quiz_file:
                 for question in valid_questions:
                     quiz_file.write(question + "\n")
             
@@ -194,8 +194,8 @@ class Scraper:
     def get_questions(self):
         """Mengambil soal dari file quiz_questions.txt"""
         questions = []
-        if os.path.exists("quiz_questions.txt"):
-            with open("quiz_questions.txt", "r", encoding="utf-8") as file:
+        if os.path.exists("database/quiz_questions.txt"):
+            with open("database/quiz_questions.txt", "r", encoding="utf-8") as file:
                 for line in file:
                     parts = line.strip().split("|")
                     if len(parts) >= 3:  # Minimal harus ada tipe, pertanyaan, dan jawaban
