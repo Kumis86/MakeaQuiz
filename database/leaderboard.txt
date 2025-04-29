@@ -1,22 +1,55 @@
-asep|0|1|True/False
-asep|0|1|Pilihan Ganda
-yanto|1|1|Pilihan Ganda
-Kumis|1|1|Pilihan Ganda
-Kumis|1|1|True/False
-yanto|1|1|Pilihan Ganda
-asep|1|1|True/False
-asep|1|1|Pilihan Ganda
-asep|1|1|True/False
-Amalia|0|1|True/False
-Amalia|1|1|True/False
-Amalia|0|1|Pilihan Ganda
-Amalia|1|1|Pilihan Ganda
-Amalia|0|1|Pilihan Ganda
-Amalia|0|1|Pilihan Ganda
-Amalia|1|1|Pilihan Ganda
-Amalia|0|1|Pilihan Ganda
-Amalia|1|1|Pilihan Ganda
-d|1|1|True/False
-d|0|1|Pilihan Ganda
-d|0|1|True/False
-d|1|1|Pilihan Ganda
+Kumis|87|110|True/False
+asep|45|52|Pilihan Ganda
+dimas|7|10|Essay
+rizki|74|110|True/False
+Kumis|42|52|Pilihan Ganda
+sopian|6|10|Essay
+cipta|110|110|True/False
+asep|78|110|True/False
+zaidan|43|52|Pilihan Ganda
+dimas|103|110|True/False
+rizki|32|52|Pilihan Ganda
+sopian|81|110|True/False
+cipta|9|10|Essay
+Kumis|8|10|Essay
+dimas|49|52|Pilihan Ganda
+asep|9|10|Essay
+sopian|47|52|Pilihan Ganda
+zaidan|91|110|True/False
+cipta|52|52|Pilihan Ganda
+rizki|5|10|Essay
+Kumis|79|110|True/False
+dimas|95|110|True/False
+asep|38|52|Pilihan Ganda
+rizki|65|110|True/False
+cipta|50|52|Pilihan Ganda
+sopian|88|110|True/False
+zaidan|7|10|Essay
+Kumis|44|52|Pilihan Ganda
+rizki|35|52|Pilihan Ganda
+asep|92|110|True/False
+dimas|46|52|Pilihan Ganda
+cipta|105|110|True/False
+sopian|42|52|Pilihan Ganda
+zaidan|48|52|Pilihan Ganda
+Kumis|83|110|True/False
+asep|8|10|Essay
+dimas|97|110|True/False
+rizki|28|52|Pilihan Ganda
+rizki|6|10|Essay
+sopian|8|10|Essay
+cipta|108|110|True/False
+zaidan|94|110|True/False
+Kumis|7|10|Essay
+dimas|7|10|Essay
+asep|85|110|True/False
+sopian|6|10|Essay
+cipta|51|52|Pilihan Ganda
+zaidan|9|10|Essay
+rizki|71|110|True/False
+Kumis|39|52|Pilihan Ganda
+dimas|49|52|Pilihan Ganda
+asep|41|52|Pilihan Ganda
+cipta|10|10|Essay
+zaidan|43|52|Pilihan Ganda
+sopian|8|10|Essay

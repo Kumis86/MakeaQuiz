@@ -58,21 +58,57 @@ class Admin:
         self._clear_content_area()
         target_frame = self.dashboard_instance.content_area
 
+        # Read user data
+        users = []
         if os.path.exists("database/user.txt"):
             with open("database/user.txt", "r") as file:
                 users = [line.strip().split(",")[0] for line in file.readlines()]
-        else:
-            users = []
 
-        columns = ("#1", "#2")
-        table = ttk.Treeview(target_frame, columns=columns, show="headings")
-        table.heading("#1", text="Username")
-        table.heading("#2", text="Status")
+        # Main container with consistent padding
+        main_container = ctk.CTkFrame(target_frame, fg_color="transparent")
+        main_container.pack(expand=True, fill="both", padx=20, pady=20)
 
-        for user in users:
-            table.insert("", "end", values=(user, "Active"))
+        # Header with title matching questions screen
+        header_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        header_frame.pack(fill="x", pady=(0, 20))
+        ctk.CTkLabel(header_frame, 
+                    text="Daftar Pengguna Aktif",
+                    font=("Inter Bold", 24)).pack(side="left")
 
-        table.pack(expand=True, fill="both", padx=20, pady=20)
+        # Scrollable content area
+        scroll_frame = ctk.CTkScrollableFrame(main_container, fg_color="transparent")
+        scroll_frame.pack(expand=True, fill="both")
+
+        if not users:
+            ctk.CTkLabel(scroll_frame,
+                        text="Tidak ada pengguna terdaftar",
+                        text_color="gray").pack(pady=50)
+            return
+
+        # Create user cards matching question display style
+        for idx, user in enumerate(users, 1):
+            user_frame = ctk.CTkFrame(scroll_frame,
+                                    fg_color="#1E1E1E",
+                                    corner_radius=10)
+            user_frame.pack(fill="x", pady=5, padx=5)
+
+            # User information layout
+            content_frame = ctk.CTkFrame(user_frame, fg_color="transparent")
+            content_frame.pack(fill="x", padx=10, pady=10)
+
+            # Number and username
+            ctk.CTkLabel(content_frame,
+                       text=f"{idx}. {user}",
+                       font=("Inter Bold", 16),
+                       anchor="w").pack(side="left")
+
+            # Status indicator
+            status_frame = ctk.CTkFrame(content_frame, fg_color="transparent")
+            status_frame.pack(side="right")
+            ctk.CTkLabel(status_frame,
+                       text="● Aktif",
+                       text_color="#4CAF50",  # Green for active
+                       font=("Inter", 14)).pack(padx=10)
 
     def show_leaderboard(self):
         self._clear_content_area()
@@ -172,36 +208,79 @@ class Admin:
         
         # Process data for display - keep all entries sorted
         sorted_data = sorted(raw_data, key=lambda x: x['score'], reverse=True)
-        table_data = sorted_data  # All data for table
         graph_data = sorted_data[:10]  # Top 10 for graph
 
-        # Create table with attempt numbers
-        columns = ("#1", "#2", "#3", "#4", "#5")
-        table = ttk.Treeview(self.table_frame, columns=columns, show="headings")
-        
-        # Configure columns
-        table.heading("#1", text="Peringkat")
-        table.heading("#2", text="Username")
-        table.heading("#3", text="Skor")
-        table.heading("#4", text="Total Soal")
-        table.heading("#5", text="Attempt #")
-        
-        # Track attempts per user for numbering
-        attempt_counts = defaultdict(int)
-        
-        # Populate table with ALL attempts
-        for i, entry in enumerate(table_data):
-            attempt_counts[entry['username']] += 1
-            values = (
-                i + 1,
-                entry['username'],
-                f"{entry['score']}/{entry['total_q']}",
-                entry['total_q'],
-                attempt_counts[entry['username']]
-            )
-            table.insert("", "end", values=values)
+        # Create main container for table
+        table_container = ctk.CTkScrollableFrame(self.table_frame, fg_color="transparent")
+        table_container.pack(expand=True, fill="both", padx=20, pady=10)
 
-        table.pack(expand=True, fill="both", padx=20, pady=20)
+        # Table header
+        header_frame = ctk.CTkFrame(table_container, fg_color="#2B2B2B", corner_radius=8)
+        header_frame.pack(fill="x", pady=(0, 5))
+
+        headers = ["Peringkat", "Username", "Skor", "Total Soal", "Attempt #"]  # Changed to "Total Soal"
+
+        # Configure header columns to match data columns
+        for i in range(5):
+            minsize = 180 if i == 1 else 100
+            header_frame.grid_columnconfigure(i, weight=1, minsize=minsize, uniform="col_group")
+
+        for col, header in enumerate(headers):
+            ctk.CTkLabel(header_frame,
+                        text=header,
+                        font=("Inter Bold", 14),
+                        text_color="#FFFFFF").grid(
+                            row=0, 
+                            column=col, 
+                            padx=5, 
+                            pady=5, 
+                            sticky="nsew"  # Changed to match data sticky
+                        )
+
+        # Create table rows
+        attempt_counts = defaultdict(int)
+        for idx, entry in enumerate(sorted_data, 1):
+            attempt_counts[entry['username']] += 1
+            
+            # Create card frame
+            row_frame = ctk.CTkFrame(table_container, 
+                                   fg_color="#1E1E1E",
+                                   corner_radius=10)
+            row_frame.pack(fill="x", pady=3, expand=True)
+        
+            # Configure grid columns
+            for i in range(5):
+                minsize = 180 if i == 1 else 100
+                row_frame.grid_columnconfigure(i, weight=1, minsize=minsize, uniform="col_group")
+
+            # Rank column
+            ctk.CTkLabel(row_frame,
+                       text=str(idx),
+                       font=("Inter", 14),
+                       text_color="#A0A0A0",
+                       anchor="w").grid(row=0, column=0, padx=5, sticky="nsew")
+
+            # Username column
+            ctk.CTkLabel(row_frame,
+                       text=entry['username'],
+                       font=("Inter SemiBold", 14),
+                       anchor="w").grid(row=0, column=1, padx=5, sticky="nsew")
+
+            # Score column
+            ctk.CTkLabel(row_frame,
+                       text=f"{entry['score']}/{entry['total_q']}",
+                       font=("Inter", 14)).grid(row=0, column=2, padx=5, sticky="nsew")
+
+            # Total questions column
+            ctk.CTkLabel(row_frame,
+                       text=entry['total_q'],
+                       font=("Inter", 14)).grid(row=0, column=3, padx=5, sticky="nsew")
+
+            # Attempt number column
+            ctk.CTkLabel(row_frame,
+                       text=str(attempt_counts[entry['username']]),
+                       font=("Inter", 14),
+                       text_color="#4CAF50").grid(row=0, column=4, padx=5, sticky="nsew")
 
         # Create graph with top 10 attempts
         try:
@@ -235,7 +314,6 @@ class Admin:
 
             plt.tight_layout()
             
-            # Embed graph
             canvas = FigureCanvasTkAgg(self.current_figure, master=self.graph_frame)
             canvas.draw()
             canvas.get_tk_widget().pack(fill='both', expand=True, padx=20, pady=10)
@@ -245,14 +323,13 @@ class Admin:
                                      text="Install matplotlib: 'pip install matplotlib'",
                                      text_color="#FF5555")
             error_label.pack(pady=20)
-
+    
     def _translate_category(self, category):
-        translations = {
+        return {
             "MC": "Pilihan Ganda",
             "TF": "True/False",
             "ESSAY": "Essay"
-        }
-        return translations.get(category, category)
+        }.get(category, category)
 
     def show_add_question(self):
         self._clear_content_area()
@@ -437,12 +514,109 @@ class Admin:
             messagebox.showerror("Error Penyimpanan", f"Gagal menyimpan pertanyaan ke file: {e}")
 
     def show_questions(self):
-        questions = self.read_questions()
-        if not questions:
-            messagebox.showinfo("Info", "Tidak ada pertanyaan yang tersedia!")
-        else:
-            questions_text = "\n\n".join(questions)
-            messagebox.showinfo("Daftar Pertanyaan", questions_text)
+        self._clear_content_area()
+        target_frame = self.dashboard_instance.content_area
+
+        # Main container
+        main_container = ctk.CTkFrame(target_frame, fg_color="transparent")
+        main_container.pack(expand=True, fill="both", padx=20, pady=20)
+
+        # Header with title and category selector
+        header_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        header_frame.pack(fill="x", pady=(0, 20))
+        
+        # Title
+        ctk.CTkLabel(header_frame, 
+                    text="Daftar Pertanyaan", 
+                    font=("Inter Bold", 24)).pack(side="left")
+
+        # Category selector
+        self.current_q_category = ctk.StringVar(value="MC")
+        category_selector = ctk.CTkSegmentedButton(
+            header_frame,
+            values=["MC", "TF", "ESSAY"],
+            variable=self.current_q_category,
+            command=lambda _: self._update_questions_display(),
+            font=("Inter", 14)
+        )
+        category_selector.pack(side="right", padx=20)
+
+        # Content container
+        self.questions_container = ctk.CTkFrame(main_container, fg_color="transparent")
+        self.questions_container.pack(expand=True, fill="both")
+
+        # Initial display
+        self._update_questions_display()
+
+    def _update_questions_display(self):
+        # Clear previous content
+        for widget in self.questions_container.winfo_children():
+            widget.destroy()
+
+        # Create scrollable frame
+        scroll_frame = ctk.CTkScrollableFrame(self.questions_container)
+        scroll_frame.pack(expand=True, fill="both")
+
+        # Get filtered questions
+        selected_type = self.current_q_category.get()
+        all_questions = self.read_raw_questions()
+        filtered_questions = [q for q in all_questions if q[0] == selected_type]
+
+        if not filtered_questions:
+            ctk.CTkLabel(scroll_frame, 
+                        text=f"Tidak ada pertanyaan {self._translate_category(selected_type)}",
+                        text_color="gray").pack(pady=50)
+            return
+
+        # Display questions
+        for idx, question in enumerate(filtered_questions, 1):
+            q_frame = ctk.CTkFrame(scroll_frame, 
+                                  fg_color="#1E1E1E", 
+                                  corner_radius=10)
+            q_frame.pack(fill="x", pady=5, padx=5)
+
+            # Header with question number and type
+            header_text = f"Pertanyaan #{idx} ({self._translate_category(question[0])})"
+            ctk.CTkLabel(q_frame, 
+                        text=header_text,
+                        font=("Inter Bold", 16),
+                        anchor="w").pack(fill="x", padx=10, pady=(10, 5))
+
+            # Question text
+            ctk.CTkLabel(q_frame, 
+                        text=question[1],
+                        font=("Inter", 14),
+                        wraplength=800,
+                        anchor="w").pack(fill="x", padx=10, pady=5)
+
+            # Answer section
+            answer_frame = ctk.CTkFrame(q_frame, fg_color="transparent")
+            answer_frame.pack(fill="x", padx=10, pady=(0, 10))
+
+            if question[0] == "MC":
+                options = question[2:-1]
+                correct_idx = int(question[-1]) + 1  # Convert to 1-based
+                ctk.CTkLabel(answer_frame, 
+                            text=f"Opsi: {' | '.join(options)}",
+                            font=("Inter", 12),
+                            text_color="#A0A0A0").pack(side="left")
+                ctk.CTkLabel(answer_frame, 
+                            text=f"Jawaban Benar: Opsi {correct_idx}",
+                            font=("Inter Bold", 12),
+                            text_color="#4CAF50").pack(side="left", padx=20)
+
+            elif question[0] == "TF":
+                ctk.CTkLabel(answer_frame, 
+                            text=f"Jawaban Benar: {question[2]}",
+                            font=("Inter Bold", 12),
+                            text_color="#4CAF50").pack(side="left")
+
+            elif question[0] == "ESSAY":
+                ctk.CTkLabel(answer_frame, 
+                            text=f"Jawaban Contoh: {question[2]}",
+                            font=("Inter", 12),
+                            text_color="#A0A0A0",
+                            wraplength=800).pack(side="left")
 
     def show_edit_question(self):
         self._clear_content_area()
@@ -848,79 +1022,65 @@ class Admin:
         self._clear_content_area()
         target_frame = self.dashboard_instance.content_area
 
+        # Main container with consistent styling
         self.user_management_frame = ctk.CTkFrame(target_frame, fg_color="transparent")
         self.user_management_frame.pack(expand=True, fill="both", padx=20, pady=20)
 
-        ctk.CTkLabel(self.user_management_frame, text="Manajemen Pengguna Terdaftar", font=("Inter Bold", 24)).pack(pady=(0, 20), anchor="w")
+        # Header with title
+        ctk.CTkLabel(self.user_management_frame,
+                   text="Manajemen Pengguna Terdaftar",
+                   font=("Inter Bold", 24)).pack(pady=(0, 20), anchor="w")
 
-        # Frame untuk tabel dan scrollbar
-        table_container = ctk.CTkFrame(self.user_management_frame)
-        table_container.pack(fill="both", expand=True)
+        # Scrollable content area
+        self.scroll_container = ctk.CTkScrollableFrame(self.user_management_frame)
+        self.scroll_container.pack(expand=True, fill="both")
 
-        # Scrollbar
-        scrollbar = ctk.CTkScrollbar(table_container)
-        scrollbar.pack(side="right", fill="y")
-
-        # Treeview untuk menampilkan pengguna
-        columns = ("#1",)
-        self.user_table = ttk.Treeview(
-            table_container, 
-            columns=columns, 
-            show="headings", 
-            yscrollcommand=scrollbar.set
-        )
-        self.user_table.heading("#1", text="Username")
-        self.user_table.pack(side="left", fill="both", expand=True)
-        
-        scrollbar.configure(command=self.user_table.yview)
-
-        # Tombol Refresh (untuk memuat ulang daftar)
-        refresh_button = ctk.CTkButton(
-             self.user_management_frame, 
-             text="Refresh Daftar", 
-             command=self.refresh_user_list,
-             fg_color="#6357B1",
-             hover_color="#4F44A3"
-        )
-        refresh_button.pack(pady=10, anchor="e")
-        
-        # Muat data pengguna awal
+        # User list display
         self.refresh_user_list()
-        
-        # Tambahkan binding untuk memilih item di tabel (opsional, untuk tombol hapus)
-        self.user_table.bind("<<TreeviewSelect>>", self.on_user_select)
-        
-        # Tombol Hapus (awalnya disable)
-        self.delete_user_button = ctk.CTkButton(
-            self.user_management_frame,
-            text="Hapus Pengguna Terpilih",
-            state="disabled",
-            fg_color="#E74C3C",
-            hover_color="#C0392B",
-            command=self.confirm_delete_user
-        )
-        self.delete_user_button.pack(pady=10, anchor="e")
+
+        # Refresh button with consistent styling
+        refresh_btn = ctk.CTkButton(self.user_management_frame,
+                                  text="Refresh Daftar",
+                                  font=("Inter Bold", 16),
+                                  height=40,
+                                  fg_color="#6357B1",
+                                  hover_color="#4F44A3",
+                                  command=self.refresh_user_list)
+        refresh_btn.pack(pady=10, anchor="e")
 
     def refresh_user_list(self):
-        """Membersihkan tabel dan memuat ulang daftar pengguna dari file."""
-        if not hasattr(self, 'user_table') or not self.user_table.winfo_exists():
-             return # Jangan lakukan apa-apa jika tabel belum siap
-             
-        # Hapus item lama
-        for item in self.user_table.get_children():
-            self.user_table.delete(item)
-            
-        # Baca data baru
+        """Memperbarui tampilan daftar pengguna secara real-time"""
+        if not self.user_management_frame.winfo_exists():
+            return
+        
+        # Hapus konten lama
+        for widget in self.scroll_container.winfo_children():
+            widget.destroy()
+        
+        # Muat ulang data pengguna
         self.users_list = self._read_all_users()
         
-        # Masukkan data baru ke tabel
+        # Tampilkan kembali data terbaru
         for user_data in self.users_list:
-             # Simpan line_index sebagai ID item di treeview untuk referensi
-             self.user_table.insert("", "end", iid=user_data['line_index'], values=(user_data['username'],))
-        
-        # Reset tombol hapus
-        if hasattr(self, 'delete_user_button') and self.delete_user_button.winfo_exists():
-            self.delete_user_button.configure(state="disabled")
+            user_card = ctk.CTkFrame(self.scroll_container,
+                                   fg_color="#1E1E1E",
+                                   corner_radius=10)
+            user_card.pack(fill="x", pady=5, padx=5)
+
+            content_frame = ctk.CTkFrame(user_card, fg_color="transparent")
+            content_frame.pack(fill="x", padx=10, pady=10)
+
+            ctk.CTkLabel(content_frame,
+                       text=user_data['username'],
+                       font=("Inter", 16)).pack(side="left")
+
+            delete_btn = ctk.CTkButton(content_frame,
+                                     text="Hapus",
+                                     width=80,
+                                     fg_color="#E74C3C",
+                                     hover_color="#C0392B",
+                                     command=lambda u=user_data: self.confirm_delete_user(u))
+            delete_btn.pack(side="right")
 
     def on_user_select(self, event=None):
         """Dipanggil saat pengguna dipilih di tabel."""
@@ -932,25 +1092,16 @@ class Admin:
             if hasattr(self, 'delete_user_button') and self.delete_user_button.winfo_exists():
                 self.delete_user_button.configure(state="disabled")
 
-    def confirm_delete_user(self):
+    def confirm_delete_user(self, user):
         """Meminta konfirmasi sebelum menghapus pengguna."""
-        selected_items = self.user_table.selection()
-        if not selected_items:
-            messagebox.showwarning("Peringatan", "Pilih pengguna yang ingin dihapus terlebih dahulu.")
+        if not user:
+            messagebox.showwarning("Peringatan", "Pengguna tidak valid.")
             return
-            
-        # Ambil data pengguna yang dipilih (hanya satu pilihan diizinkan oleh default Treeview)
-        selected_iid = selected_items[0] # iid adalah line_index
-        selected_user = next((user for user in self.users_list if user['line_index'] == int(selected_iid)), None)
-        
-        if not selected_user:
-             messagebox.showerror("Error", "Pengguna yang dipilih tidak ditemukan dalam data internal.")
-             return
              
-        username_to_delete = selected_user['username']
-        
+        username_to_delete = user['username']
+
         if messagebox.askyesno("Konfirmasi Hapus", f"Apakah Anda yakin ingin menghapus pengguna '{username_to_delete}' secara permanen?"):
-             self.delete_user_from_list(selected_user)
+             self.delete_user_from_list(user)
              
     def delete_user_from_list(self, user_to_delete):
         """Menghapus pengguna dari daftar dan menulis ulang file."""
@@ -961,11 +1112,11 @@ class Admin:
         
         # Tulis ulang file database
         if self._rewrite_user_file(users_to_keep):
-             messagebox.showinfo("Sukses", f"Pengguna '{user_to_delete['username']}' berhasil dihapus.")
-             # Muat ulang daftar di tabel
-             self.refresh_user_list()
+            messagebox.showinfo("Sukses", f"Pengguna '{user_to_delete['username']}' berhasil dihapus.")
+            # Refresh tampilan daftar pengguna
+            self.refresh_user_list()
         else:
-             messagebox.showerror("Gagal", f"Gagal menghapus pengguna '{user_to_delete['username']}'. Cek log untuk detail.")
+            messagebox.showerror("Gagal", f"Gagal menghapus pengguna '{user_to_delete['username']}'. Cek log untuk detail.")
 
     def _read_all_users(self):
         """Membaca semua data pengguna dari file database."""

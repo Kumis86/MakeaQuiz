@@ -1,30 +1,172 @@
-TF|Python merupakan bahasa pemrograman yang dikompilasi.|False
-TF|Fungsi utama dari loop adalah untuk menjalankan perintah secara berulang.|True
-TF|Boolean hanya memiliki tiga nilai: True, False, dan Null.|False
-TF|Di dalam struktur if-elif-else, hanya satu blok yang akan dieksekusi.|True
-TF|Bahasa pemrograman Java dikembangkan oleh Microsoft.|False
-TF|Fungsi input() dalam Python digunakan untuk menerima data dari pengguna.|True
-TF|Komentar dalam bahasa C diawali dengan tanda //. |True
-TF|Perintah 'continue' digunakan untuk keluar dari sebuah loop.|False
-TF|Python menggunakan indentasi untuk menentukan blok kode.|True
-TF|Array di C bersifat dinamis dan dapat berubah ukuran.|False
-MC|Apa output dari perintah print(2**3) di Python?|5|6|8|9|2
-MC|Bahasa pemrograman manakah yang biasa digunakan untuk pengembangan web frontend?|Python|C++|JavaScript|SQL|2
-MC|Manakah yang bukan operator logika dalam Python?|and|or|not|xor|3
-MC|Fungsi dari return dalam sebuah fungsi adalah?|Menyimpan data|Mengakhiri fungsi dan mengembalikan nilai|Menampilkan data|Melanjutkan loop|1
-MC|Apa hasil dari 10 % 3?|0|1|2|3|1
-MC|Struktur data yang mengikuti prinsip FIFO adalah?|Stack|Queue|Tree|Graph|1
-MC|Apa ekstensi umum untuk file Python?|.java|.py|.txt|.cpp|1
-MC|Manakah yang termasuk ke dalam tipe data numerik di Python?|str|bool|int|list|2
-MC|Manakah dari berikut ini bukan merupakan jenis perulangan di Python?|for|while|do-while|loop|2
-MC|Fungsi dari def dalam Python adalah untuk?|Membuat variabel|Membuat kondisi|Membuat fungsi|Membuat class|2
-ESSAY|Apa perbedaan mendasar antara bahasa pemrograman terkompilasi dan terinterpretasi?|Bahasa terkompilasi diterjemahkan seluruhnya sebelum dijalankan, sedangkan terinterpretasi dijalankan baris per baris.
-ESSAY|Jelaskan konsep dasar dari sebuah fungsi rekursif.|Fungsi rekursif memanggil dirinya sendiri hingga mencapai kondisi dasar.
-ESSAY|Apa itu syntax dalam konteks pemrograman?|Syntax adalah aturan penulisan kode yang harus diikuti agar program dapat dijalankan.
-ESSAY|Jelaskan bagaimana cara kerja struktur data stack.|Stack bekerja dengan prinsip LIFO, yaitu elemen terakhir masuk adalah yang pertama keluar.
-ESSAY|Apa yang dimaksud dengan debugging dan mengapa penting?|Debugging adalah proses menemukan dan memperbaiki error pada program agar berjalan dengan benar.
-ESSAY|Jelaskan apa yang dimaksud dengan parameter dan argumen dalam fungsi.|Parameter adalah variabel dalam definisi fungsi, argumen adalah nilai yang dikirim saat fungsi dipanggil.
-ESSAY|Berikan contoh penggunaan perulangan while dalam Python.|Contoh: while x < 5: print(x); x += 1
-ESSAY|Apa yang dimaksud dengan exception handling?|Teknik untuk menangani error yang mungkin terjadi selama eksekusi program.
-ESSAY|Jelaskan tujuan penggunaan komentar dalam kode program.|Untuk memberikan penjelasan tambahan agar kode mudah dipahami.
-ESSAY|Apa itu IDE dan sebutkan dua contohnya.|IDE adalah lingkungan pengembangan perangkat lunak. Contoh: PyCharm, Visual Studio Code.
+TF|Apakah informatika menyenangkan?|True
+TF|Bumi berputar mengelilingi matahari?|True
+TF|Air membeku pada suhu 0 derajat Celsius?|True
+TF|Manusia memiliki tiga mata?|False
+TF|Gunung Everest adalah gunung tertinggi di dunia?|True
+TF|Gajah lebih kecil daripada kucing?|False
+TF|Indonesia terletak di benua Asia?|True
+TF|Matahari terbit dari barat?|False
+TF|Kupu-kupu berkembang dari ulat?|True
+TF|Manusia bernapas menggunakan insang?|False
+TF|Jantung manusia berdetak untuk memompa darah?|True
+TF|Air laut terasa manis?|False
+TF|Komputer pertama kali ditemukan pada abad ke-20?|True
+TF|Bulan lebih besar daripada Bumi?|False
+TF|Tumbuhan membutuhkan sinar matahari untuk fotosintesis?|True
+TF|Paris adalah ibu kota Spanyol?|False
+TF|Hewan omnivora memakan tumbuhan dan daging?|True
+TF|Seekor laba-laba memiliki 10 kaki?|False
+TF|Besi adalah penghantar listrik yang baik?|True
+TF|Suhu normal tubuh manusia adalah sekitar 37 derajat Celsius?|True
+TF|Pisang tumbuh di pohon?|True
+TF|Hujan salju sering terjadi di Indonesia?|False
+TF|Air adalah senyawa yang terdiri dari hidrogen dan oksigen?|True
+TF|Manusia bisa hidup tanpa air selama sebulan?|False
+TF|Gunung Merapi terletak di Indonesia?|True
+TF|Seekor burung unta dapat terbang tinggi?|False
+TF|Bumi berbentuk datar?|False
+TF|Panda memakan bambu sebagai makanan utama?|True
+TF|Elektron bermuatan positif?|False
+TF|Gunung berapi bisa meletus kapan saja?|True
+TF|Jerapah adalah hewan darat tertinggi di dunia?|True
+TF|Manusia memiliki lima jari di setiap tangan?|True
+TF|Semua ular beracun?|False
+TF|Buaya hidup di air dan di darat?|True
+TF|Air raksa adalah logam cair pada suhu kamar?|True
+TF|Kucing adalah hewan herbivora?|False
+TF|Bunga matahari menghadap matahari saat tumbuh?|True
+TF|Zebra memiliki garis-garis berwarna biru dan putih?|False
+TF|Kelelawar adalah mamalia yang bisa terbang?|True
+TF|Singa dikenal sebagai raja hutan?|True
+TF|Awan terbentuk dari uap air?|True
+TF|Kaktus biasanya ditemukan di hutan hujan?|False
+TF|Garam dapur memiliki rumus kimia NaCl?|True
+TF|Singa laut adalah spesies burung?|False
+TF|Lapisan ozon melindungi bumi dari sinar ultraviolet?|True
+TF|Semua burung bisa terbang?|False
+TF|Rusa adalah hewan karnivora?|False
+TF|Fotosintesis menghasilkan oksigen?|True
+TF|Telinga manusia digunakan untuk mendengar suara?|True
+TF|Listrik ditemukan oleh Albert Einstein?|False
+TF|Pluto sekarang dianggap sebagai planet penuh?|False
+TF|Sungai Amazon adalah sungai terpanjang di dunia?|False
+TF|Hewan berdarah dingin menyesuaikan suhu tubuhnya dengan lingkungan?|True
+TF|Kupu-kupu hidup di air?|False
+TF|Orangutan hanya ditemukan di Asia Tenggara?|True
+TF|Matahari adalah bintang?|True
+TF|Pasir terbuat dari potongan-potongan batu?|True
+TF|Kincir angin menghasilkan energi listrik?|True
+TF|Katak hidup hanya di darat?|False
+TF|Manusia memiliki lebih dari 200 tulang di tubuhnya?|True
+TF|Garam membuat air mendidih pada suhu lebih rendah?|False
+TF|Paus adalah mamalia?|True
+TF|Semua serangga memiliki enam kaki?|True
+TF|Kanguru berasal dari Afrika?|False
+TF|Ular memiliki kelopak mata?|False
+TF|Suhu air mendidih di permukaan laut adalah 100 derajat Celsius?|True
+TF|Planet Mars berwarna merah karena kandungan besi oksidanya?|True
+TF|Semua makhluk hidup membutuhkan oksigen untuk hidup?|False
+TF|Pisang adalah buah beri secara botani?|True
+TF|Jamur adalah tumbuhan?|False
+TF|Benua terkecil di dunia adalah Australia?|True
+TF|Anjing termasuk hewan mamalia?|True
+TF|Lebah madu bisa menyengat hanya sekali?|True
+TF|Burung penguin bisa terbang tinggi di udara?|False
+TF|Antartika adalah gurun terdingin di dunia?|True
+TF|Tulang manusia lebih kuat dibandingkan beton dalam ketahanan tekan?|True
+TF|Bebek memiliki tiga kaki?|False
+TF|Uranus mengorbit Matahari dengan posisi hampir horizontal?|True
+TF|Cacing tanah bernapas melalui kulitnya?|True
+TF|Ikan hiu adalah mamalia?|False
+TF|Otak manusia terdiri dari sekitar 60% lemak?|True
+TF|Tulang rusuk manusia selalu berjumlah 24 buah?|False
+TF|Manusia memiliki lebih banyak sel bakteri daripada sel tubuh sendiri?|True
+TF|Air bisa berada dalam bentuk padat, cair, dan gas?|True
+TF|Napas manusia mengandung karbon dioksida lebih banyak daripada oksigen?|True
+TF|Listrik dihasilkan oleh pergerakan neutron?|False
+TF|Pelangi terdiri dari 10 warna utama?|False
+TF|Sungai Nil melintasi benua Asia?|False
+TF|Gunung Kilimanjaro berada di Afrika?|True
+TF|Anjing laut termasuk hewan berdarah panas?|True
+TF|Bola lampu ditemukan oleh Thomas Edison?|True
+TF|Semut memiliki lima mata?|False
+TF|Buaya memiliki gigi baru setiap kali gigi lama tanggal?|True
+TF|Gurun Sahara adalah gurun terbesar di dunia berdasarkan luas?|True
+TF|Burung hantu aktif di siang hari?|False
+TF|Kulit manusia adalah organ terbesar pada tubuh?|True
+TF|Telur reptil biasanya memiliki kulit keras seperti telur burung?|False
+TF|Semua bunga menghasilkan biji?|True
+TF|Gunung Fuji terletak di Jepang?|True
+TF|Singa betina lebih sering berburu daripada singa jantan?|True
+TF|Kerang termasuk kelompok ikan?|False
+TF|Hujan meteor terjadi ketika meteoroid memasuki atmosfer Bumi?|True
+TF|Anemon laut adalah tumbuhan?|False
+TF|Kucing bisa mendengar suara dengan frekuensi lebih tinggi daripada manusia?|True
+TF|Ubur-ubur tidak memiliki otak?|True
+TF|Lumut berkembang biak dengan biji?|False
+TF|Gurun Gobi berada di Amerika Selatan?|False
+TF|Belalang dapat melompat sejauh 20 kali panjang tubuhnya?|True
+TF|Darah dalam tubuh manusia berwarna biru?|False
+TF|Gigi manusia dewasa berjumlah 32 buah?|True
+MC|10 adalah?|1 + 9|5 + 5|3 + 7|Semuanya Benar|3
+MC|Berapa hasil dari 7 + 8?|12|14|15|16|2
+MC|Apa ibu kota dari Jepang?|Beijing|Seoul|Tokyo|Bangkok|2
+MC|Planet terbesar di tata surya kita adalah?|Bumi|Mars|Saturnus|Jupiter|3
+MC|Hewan tercepat di darat adalah?|Kuda|Cheetah|Singa|Serigala|1
+MC|Warna primer terdiri dari?|Merah, Kuning, Biru|Hijau, Merah, Biru|Kuning, Hijau, Merah|Biru, Ungu, Hijau|0
+MC|Siapa penemu telepon?|Isaac Newton|Thomas Edison|Alexander Graham Bell|Nikola Tesla|2
+MC|Apa nama sungai terpanjang di dunia?|Amazon|Nil|Mississippi|Yangtze|1
+MC|Berapa jumlah benua di dunia?|5|6|7|8|2
+MC|Apa nama gas yang kita hirup untuk bernapas?|Karbon Dioksida|Nitrogen|Oksigen|Hidrogen|2
+MC|Hewan apa yang dapat hidup di darat dan air?|Ular|Katak|Elang|Kucing|1
+MC|Siapa penulis Harry Potter?|J.R.R. Tolkien|J.K. Rowling|Stephen King|Rick Riordan|1
+MC|Simbol kimia untuk emas adalah?|Ag|Au|Fe|Pb|1
+MC|Gunung berapi aktif di Indonesia adalah?|Gunung Everest|Gunung Fuji|Gunung Merapi|Gunung Kilimanjaro|2
+MC|Berapa jumlah warna dalam pelangi?|5|6|7|8|2
+MC|Planet terdekat dengan matahari adalah?|Venus|Bumi|Merkurius|Mars|2
+MC|Hewan apa yang dikenal memiliki ingatan kuat?|Gajah|Kucing|Burung|Ikan|0
+MC|Bagian tanaman yang menyerap air adalah?|Daun|Batang|Akar|Bunga|2
+MC|Berapa jumlah sisi segitiga?|2|3|4|5|1
+MC|Siapa presiden pertama Indonesia?|Sukarno|Suharto|Habibie|Gus Dur|0
+MC|Berapa hasil dari 5 × 6?|30|35|25|40|0
+MC|Unsur kimia dengan simbol O adalah?|Osmium|Oksigen|Oganesson|Olivenit|1
+MC|Benua terbesar di dunia adalah?|Afrika|Asia|Eropa|Amerika|1
+MC|Hewan apa yang bisa berubah warna?|Gurita|Chameleon|Ikan Paus|Burung Elang|1
+MC|Satuan dasar panjang dalam SI adalah?|Meter|Inci|Kaki|Yard|0
+MC|Dalam sistem komputer, CPU adalah singkatan dari?|Central Programming Unit|Central Processing Unit|Computer Personal Unit|Computer Processing Unit|1
+MC|Apa nama lautan terbesar di dunia?|Atlantik|Arktik|Pasifik|Hindia|2
+MC|Berapa jumlah planet di tata surya kita (termasuk Pluto)?|8|9|10|7|1
+MC|Suhu air mendidih dalam skala Celsius adalah?|50|75|90|100|3
+MC|Bagian tubuh manusia yang memompa darah adalah?|Paru-paru|Jantung|Hati|Ginjal|1
+MC|Siapa yang menemukan hukum gravitasi?|Galileo Galilei|Isaac Newton|Albert Einstein|Nikola Tesla|1
+MC|Binatang apa yang disebut "raja rimba"?|Harimau|Singa|Gajah|Serigala|1
+MC|Negara manakah yang memiliki menara Eiffel?|Italia|Spanyol|Prancis|Jerman|2
+MC|Berapakah 12 dibagi 3?|2|3|4|5|2
+MC|Benda langit yang mengelilingi planet disebut?|Asteroid|Satelit|Kometa|Meteor|1
+MC|Apa nama zat yang membuat darah berwarna merah?|Hemoglobin|Insulin|Protein|Enzim|0
+MC|Mata uang resmi Jepang adalah?|Won|Yuan|Yen|Ringgit|2
+MC|Laut yang membatasi Indonesia dan Australia adalah?|Laut Merah|Laut Timor|Laut Kaspia|Laut Andaman|1
+MC|Apa nama alat untuk mengukur suhu?|Barometer|Thermometer|Higrometer|Anemometer|1
+MC|Bunga nasional Jepang adalah?|Mawar|Tulip|Sakura|Anggrek|2
+MC|Manusia membutuhkan apa untuk bertahan hidup?|Makanan|Air|Udara|Semua jawaban benar|3
+MC|Berapa hasil dari 9²?|18|81|72|90|1
+MC|Apa sebutan perubahan cair menjadi gas?|Mencair|Menguap|Membeku|Mengkristal|1
+MC|Apa nama organ terbesar pada tubuh manusia?|Paru-paru|Kulit|Hati|Otak|1
+MC|Pohon apa yang menghasilkan karet?|Karet|Beringin|Mangga|Bambu|0
+MC|Alat musik tradisional Indonesia yang dipukul disebut?|Gitar|Suling|Gendang|Biola|2
+MC|Apa nama alat untuk melihat benda kecil?|Teleskop|Mikroskop|Periskop|Stetoskop|1
+MC|Negara mana yang dijuluki "Negeri Gajah Putih"?|India|Vietnam|Thailand|Laos|2
+MC|Berapa jumlah jari tangan manusia?|8|10|12|14|1
+MC|Simbol kimia untuk air adalah?|H2O|O2|CO2|N2|0
+MC|Berapakah hasil dari 20 - 8?|10|12|14|15|1
+MC|Planet yang terkenal dengan cincin indahnya adalah?|Uranus|Saturnus|Neptunus|Venus|1
+ESSAY|Apa nama negara kita?|Indonesia
+ESSAY|Apa ibu kota Prancis?|Paris
+ESSAY|Planet yang dikenal sebagai Planet Merah?|Mars
+ESSAY|Mamalia terbesar di dunia?|Paus
+ESSAY|Gas utama dalam atmosfer Bumi?|Nitrogen
+ESSAY|Lautan terbesar di dunia?|Pasifik
+ESSAY|Gunung tertinggi di dunia?|Everest
+ESSAY|Siapa presiden Amerika Serikat saat ini?|Biden
+ESSAY|Apa ibu kota Jerman?|Berlin
+ESSAY|Proses pembuatan makanan oleh tumbuhan?|Fotosintesis
