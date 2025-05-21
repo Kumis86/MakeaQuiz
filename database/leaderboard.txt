@@ -53,3 +53,4 @@ asep|41|52|Pilihan Ganda
 cipta|10|10|Essay
 zaidan|43|52|Pilihan Ganda
 sopian|8|10|Essay
+frimpong|50|52|Pilihan Ganda
