@@ -188,7 +188,7 @@ class SignupScreen(ctk.CTkFrame):
 
         otp = send_otp(email, username)
         if not otp:
-            messagebox.showerror("OTP Gagal", "Gagal mengirim OTP.")
+            messagebox.showerror("OTP Gagal", "Batas OTP tercapai. Coba lagi dalam 5 menit.")
             return
 
         def lanjutkan_registrasi():

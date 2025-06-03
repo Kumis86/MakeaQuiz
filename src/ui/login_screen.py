@@ -182,7 +182,7 @@ class LoginScreen(ctk.CTkFrame):
             # Kirim OTP
             otp = send_otp(email_value, username_found)
             if not otp:
-                messagebox.showerror("Gagal", "Gagal mengirim OTP ke email.")
+                messagebox.showerror("Gagal", "Batas OTP tercapai. Coba lagi dalam 5 menit.")
                 return
 
             # Tutup form email
