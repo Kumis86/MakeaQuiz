@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from src.utils.assets import AssetManager
+from src.ui.Play_Music_Button import PlayMusicButton
 from PIL import Image
 
 class MainScreen(ctk.CTkFrame):
@@ -116,3 +117,11 @@ class MainScreen(ctk.CTkFrame):
             command=self.user_callback
         )
         user_button.pack(side="left", padx=20)
+
+        # Tambahkan tombol play music di kanan atas 
+        self.play_music_btn = PlayMusicButton(
+        self,
+        audio_manager=self.parent.audio_manager,  # Asumsi parent punya audio_manager
+        music_path=self.asset_manager.get_asset_path("audio/main_theme.mp3")
+        )
+        self.play_music_btn.place(x=1100, y=20, width=120, height=40)

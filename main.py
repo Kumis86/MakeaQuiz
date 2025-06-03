@@ -21,6 +21,7 @@ try:
     from src.utils.audio_manager import AudioManager
     from src.core.user import User
     from src.core.admin import Admin
+    from music_button import MusicButton
 except ImportError as e:
     print(f"Error importing modules: {e}")
     traceback.print_exc()
@@ -33,7 +34,7 @@ class MakeaQuizApp:
             self.user_instance = User(self)
             self.config = AppConfig()
             self.asset_manager = AssetManager()
-            self.audio = AudioManager()
+            self.audio_manager = AudioManager()
             self.window = None
             self.current_frame = None
             self.admin_instance = None
@@ -47,10 +48,8 @@ class MakeaQuizApp:
         try:
             #---Inisialisasi Musik---
             pygame.mixer.init()
-            pygame.mixer.music.load("assets/audio/main_theme.mp3")  # Ganti dengan path audio kamu
-            pygame.mixer.music.set_volume(100)  # Bisa kamu atur sesuai selera
-            pygame.mixer.music.play(-1)  # -1 artinya musik akan loop terus
-
+            self.audio_manager.play_music(self.config.audio_paths["main_theme"])
+            
             # Mengatur tema dan warna aplikasi
             ctk.set_appearance_mode("dark")
             ctk.set_default_color_theme("blue")
@@ -61,6 +60,10 @@ class MakeaQuizApp:
             self.window.geometry(f"{self.config.width}x{self.config.height}")
             self.window.title(self.config.app_name)
             self.window.resizable(False, False)
+            
+            # Inisialisasi tombol musik
+            self.music_button = MusicButton(self.window, self.audio_manager)
+            self.music_button.btn.lift()  # Pastikan tombol di atas widget lain
             
             # Mulai dengan splash screen
             self.show_splash_screen()
@@ -85,6 +88,9 @@ class MakeaQuizApp:
         # Destroy the window
         self.window.destroy()
         sys.exit(0)
+
+
+
     
     def show_splash_screen(self):
         """Menampilkan splash screen"""
@@ -107,8 +113,9 @@ class MakeaQuizApp:
                 user_callback=self.navigate_to_login
             )
             
-            self.audio.play_music("assets/audio/main_theme.mp3")
-
+            self.audio_manager.play_music(self.config.audio_paths["main_theme"])
+            # Tambahkan tombol musik di atas frame main
+            self.add_music_button(self.current_frame)
         except Exception as e:
             print(f"Error in show_main_screen: {e}")
             traceback.print_exc()
@@ -123,6 +130,8 @@ class MakeaQuizApp:
                 success_callback=self.handle_admin_login,
                 back_callback=self.navigate_to_main_screen
             )
+            # Tambahkan tombol musik di atas frame main
+            self.add_music_button(self.current_frame)
         except Exception as e:
             print(f"Error in show_admin_login: {e}")
             traceback.print_exc()
@@ -143,6 +152,8 @@ class MakeaQuizApp:
                 user_callback=self.navigate_to_login
             )
             self.current_frame.place(x=0, y=0, relwidth=1, relheight=1)
+            # Tambahkan tombol musik di atas frame main
+            self.add_music_button(self.current_frame)
         except Exception as e:
             print(f"Error in show_login_screen: {e}")
             traceback.print_exc()
@@ -160,6 +171,8 @@ class MakeaQuizApp:
                 login_callback=self.show_login_screen
             )
             self.current_frame.place(x=0, y=0, relwidth=1, relheight=1)
+            # Tambahkan tombol musik di atas frame main
+            self.add_music_button(self.current_frame)
         except Exception as e:
             print(f"Error in show_dashboard: {e}")
             traceback.print_exc()
@@ -174,7 +187,9 @@ class MakeaQuizApp:
                 app_instance=self,
                 back_callback=self.navigate_to_main_screen
             )
-            self.audio.play_music("assets/audio/quiz_theme.mp3")
+            self.audio_manager.play_music(self.config.audio_paths["quiz_theme"])
+            # Tambahkan tombol musik di atas frame main
+            self.add_music_button(self.current_frame)
         except Exception as e:
             print(f"Error in show_play_quiz: {e}")
             traceback.print_exc()
@@ -248,6 +263,13 @@ class MakeaQuizApp:
     def navigate_to_admin_login(self):
         """Navigasi ke layar login admin"""
         self.show_admin_login()
+
+    def add_music_button(self, parent):
+        # Hapus tombol sebelumnya jika ada
+        if hasattr(self, 'music_button') and self.music_button:
+            self.music_button.btn.destroy()
+        self.music_button = MusicButton(parent, self.audio_manager)
+        self.music_button.btn.lift()
 
 if __name__ == "__main__":
     try:

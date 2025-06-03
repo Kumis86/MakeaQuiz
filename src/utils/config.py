@@ -23,3 +23,11 @@ class AppConfig:
         self.font_small_title = ("Inter ExtraBoldItalic", 36)
         self.font_regular = ("Roboto", 16)
         self.font_input_label = ("Roboto Regular", 32)
+
+        #path background music
+        self.audio_paths = {
+            "main_theme": "assets/audio/main_theme.mp3",
+            "quiz_theme": "assets/audio/quiz_theme.mp3",
+            "success": "assets/audio/success.wav",
+            "fail": "assets/audio/fail.wav",
+        }
