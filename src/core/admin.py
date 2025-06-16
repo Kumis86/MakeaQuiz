@@ -114,20 +114,17 @@ class Admin:
         self._clear_content_area()
         target_frame = self.dashboard_instance.content_area
 
-        # Read and categorize leaderboard data with proper mode mapping
+        # Read and categorize leaderboard data
         leaderboard_data = {"MC": [], "TF": [], "ESSAY": []}
-        leaderboard_file = "database/leaderboard.txt"
-        
-        # Mode translation dictionary
         mode_mapping = {
             "Pilihan Ganda": "MC",
             "True/False": "TF",
             "Essay": "ESSAY"
         }
 
-        if os.path.exists(leaderboard_file):
+        if os.path.exists("database/leaderboard.txt"):
             try:
-                with open(leaderboard_file, "r") as file:
+                with open("database/leaderboard.txt", "r") as file:
                     for line in file:
                         if line.strip():
                             parts = line.strip().split("|")
@@ -135,37 +132,53 @@ class Admin:
                                 try:
                                     raw_mode = parts[3].strip()
                                     quiz_type = mode_mapping.get(raw_mode, None)
-                                    
-                                    if not quiz_type:
-                                        continue  # Skip unknown types
-                                        
-                                    entry = {
-                                        "username": parts[0],
-                                        "score": int(parts[1]),
-                                        "total_q": parts[2],
-                                        "mode": quiz_type
-                                    }
-                                    leaderboard_data[quiz_type].append(entry)
-                                except (ValueError, IndexError) as e:
-                                    print(f"Skipping invalid line: {line.strip()} - {str(e)}")
+                                    if quiz_type:
+                                        entry = {
+                                            "username": parts[0],
+                                            "score": int(parts[1]),
+                                            "total_q": parts[2],
+                                            "mode": quiz_type
+                                        }
+                                        leaderboard_data[quiz_type].append(entry)
+                                except (ValueError, IndexError):
+                                    continue
             except Exception as e:
-                print(f"Error reading leaderboard file: {e}")
                 messagebox.showerror("Error", f"Failed to read leaderboard file: {e}")
 
-        # Sort each category by score descending
+        # Preprocess data for different views
+        self.processed_data = {
+            "user_stats": defaultdict(lambda: {'total_score': 0, 'attempts': 0}),
+            "attempt_counts": defaultdict(int)
+        }
+        
+        # Aggregate user statistics
         for category in leaderboard_data:
-            leaderboard_data[category].sort(key=lambda x: x['score'], reverse=True)
-
-        # Figure tracking
-        self.current_figure = None
+            for entry in leaderboard_data[category]:
+                user_key = (entry['username'], category)
+                self.processed_data['user_stats'][user_key]['total_score'] += entry['score']
+                self.processed_data['user_stats'][user_key]['attempts'] += 1
+                self.processed_data['attempt_counts'][user_key] += 1
 
         # Create main container
         main_container = ctk.CTkFrame(target_frame)
         main_container.pack(expand=True, fill="both")
 
-        # Category selector with translated labels
+        # View mode selector
+        view_mode_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        view_mode_frame.pack(pady=10, fill="x")
+        
+        self.current_view_mode = ctk.StringVar(value="Top 25 Scores")
+        view_mode_selector = ctk.CTkSegmentedButton(
+            view_mode_frame,
+            values=["Top 25 Scores", "Top 10 Averages", "Top 10 Attempts"],
+            variable=self.current_view_mode,
+            command=lambda _: self._update_leaderboard_display(leaderboard_data),
+        )
+        view_mode_selector.pack(padx=20, pady=5)
+
+        # Original category selector
         category_frame = ctk.CTkFrame(main_container, fg_color="transparent")
-        category_frame.pack(pady=10, fill="x")
+        category_frame.pack(pady=5, fill="x")
         
         self.current_category = ctk.StringVar(value="MC")
         category_selector = ctk.CTkSegmentedButton(
@@ -176,7 +189,7 @@ class Admin:
         )
         category_selector.pack(padx=20, pady=5)
 
-        # Table and graph container
+        # Content container
         content_container = ctk.CTkFrame(main_container)
         content_container.pack(expand=True, fill="both")
         content_container.grid_rowconfigure(0, weight=3)
@@ -190,11 +203,104 @@ class Admin:
         self.graph_frame = ctk.CTkFrame(content_container)
         self.graph_frame.grid(row=1, column=0, sticky="nsew")
 
-        # Initial display
+        self._update_leaderboard_display(leaderboard_data)
+
+    def show_leaderboard(self):
+        self._clear_content_area()
+        target_frame = self.dashboard_instance.content_area
+
+        # Read and categorize leaderboard data
+        leaderboard_data = {"MC": [], "TF": [], "ESSAY": []}
+        mode_mapping = {
+            "Pilihan Ganda": "MC",
+            "True/False": "TF",
+            "Essay": "ESSAY"
+        }
+
+        if os.path.exists("database/leaderboard.txt"):
+            try:
+                with open("database/leaderboard.txt", "r") as file:
+                    for line in file:
+                        if line.strip():
+                            parts = line.strip().split("|")
+                            if len(parts) >= 4:
+                                try:
+                                    raw_mode = parts[3].strip()
+                                    quiz_type = mode_mapping.get(raw_mode, None)
+                                    if quiz_type:
+                                        entry = {
+                                            "username": parts[0],
+                                            "score": int(parts[1]),
+                                            "total_q": parts[2],
+                                            "mode": quiz_type
+                                        }
+                                        leaderboard_data[quiz_type].append(entry)
+                                except (ValueError, IndexError):
+                                    continue
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to read leaderboard file: {e}")
+
+        # Preprocess data for different views
+        self.processed_data = {
+            "user_stats": defaultdict(lambda: {'total_score': 0, 'attempts': 0}),
+            "attempt_counts": defaultdict(int)
+        }
+        
+        # Aggregate user statistics
+        for category in leaderboard_data:
+            for entry in leaderboard_data[category]:
+                user_key = (entry['username'], category)
+                self.processed_data['user_stats'][user_key]['total_score'] += entry['score']
+                self.processed_data['user_stats'][user_key]['attempts'] += 1
+                self.processed_data['attempt_counts'][user_key] += 1
+
+        # Create main container
+        main_container = ctk.CTkFrame(target_frame)
+        main_container.pack(expand=True, fill="both")
+
+        # View mode selector
+        view_mode_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        view_mode_frame.pack(pady=10, fill="x")
+        
+        self.current_view_mode = ctk.StringVar(value="Top 25 Scores")
+        view_mode_selector = ctk.CTkSegmentedButton(
+            view_mode_frame,
+            values=["Top 25 Scores", "Top 10 Averages", "Top 10 Attempts"],
+            variable=self.current_view_mode,
+            command=lambda _: self._update_leaderboard_display(leaderboard_data),
+        )
+        view_mode_selector.pack(padx=20, pady=5)
+
+        # Original category selector
+        category_frame = ctk.CTkFrame(main_container, fg_color="transparent")
+        category_frame.pack(pady=5, fill="x")
+        
+        self.current_category = ctk.StringVar(value="MC")
+        category_selector = ctk.CTkSegmentedButton(
+            category_frame,
+            values=["MC", "TF", "ESSAY"],
+            variable=self.current_category,
+            command=lambda _: self._update_leaderboard_display(leaderboard_data),
+        )
+        category_selector.pack(padx=20, pady=5)
+
+        # Content container
+        content_container = ctk.CTkFrame(main_container)
+        content_container.pack(expand=True, fill="both")
+        content_container.grid_rowconfigure(0, weight=3)
+        content_container.grid_rowconfigure(1, weight=1)
+        content_container.grid_columnconfigure(0, weight=1)
+
+        # Create frames
+        self.table_frame = ctk.CTkFrame(content_container)
+        self.table_frame.grid(row=0, column=0, sticky="nsew")
+        
+        self.graph_frame = ctk.CTkFrame(content_container)
+        self.graph_frame.grid(row=1, column=0, sticky="nsew")
+
         self._update_leaderboard_display(leaderboard_data)
 
     def _update_leaderboard_display(self, leaderboard_data):
-        # Clear previous widgets and figures 
         if hasattr(self, 'current_figure') and self.current_figure:
             plt.close(self.current_figure)
 
@@ -204,13 +310,26 @@ class Admin:
             widget.destroy()
 
         category = self.current_category.get()
+        view_mode = self.current_view_mode.get()
         raw_data = leaderboard_data.get(category, [])
         
-        # Process data for display - keep all entries sorted
-        sorted_data = sorted(raw_data, key=lambda x: x['score'], reverse=True)
-        graph_data = sorted_data[:10]  # Top 10 for graph
+        # Process data based on view mode
+        if view_mode == "Top 25 Scores":
+            display_data = sorted(raw_data, key=lambda x: x['score'], reverse=True)[:25]
+        elif view_mode == "Top 10 Averages":
+            user_averages = []
+            for (user, cat), stats in self.processed_data['user_stats'].items():
+                if cat == category:
+                    avg = stats['total_score'] / stats['attempts']
+                    user_averages.append({'username': user, 'average': avg})
+            display_data = sorted(user_averages, key=lambda x: x['average'], reverse=True)[:10]
+        else:  # Top 10 Attempts
+            user_attempts = [{'username': user, 'attempts': count} 
+                            for (user, cat), count in self.processed_data['attempt_counts'].items() 
+                            if cat == category]
+            display_data = sorted(user_attempts, key=lambda x: x['attempts'], reverse=True)[:10]
 
-        # Create main container for table
+        # Create table
         table_container = ctk.CTkScrollableFrame(self.table_frame, fg_color="transparent")
         table_container.pack(expand=True, fill="both", padx=20, pady=10)
 
@@ -218,12 +337,16 @@ class Admin:
         header_frame = ctk.CTkFrame(table_container, fg_color="#2B2B2B", corner_radius=8)
         header_frame.pack(fill="x", pady=(0, 5))
 
-        headers = ["Peringkat", "Username", "Skor", "Total Soal", "Attempt #"]  # Changed to "Total Soal"
+        headers = []
+        if view_mode == "Top 25 Scores":
+            headers = ["Rank", "Username", "Score", "Total Questions", "Attempt #"]
+        elif view_mode == "Top 10 Averages":
+            headers = ["Rank", "Username", "Average Score"]
+        else:
+            headers = ["Rank", "Username", "Attempt Count"]
 
-        # Configure header columns to match data columns
-        for i in range(5):
-            minsize = 180 if i == 1 else 100
-            header_frame.grid_columnconfigure(i, weight=1, minsize=minsize, uniform="col_group")
+        for i in range(len(headers)):
+            header_frame.grid_columnconfigure(i, weight=1, minsize=100, uniform="col_group")
 
         for col, header in enumerate(headers):
             ctk.CTkLabel(header_frame,
@@ -234,24 +357,16 @@ class Admin:
                             column=col, 
                             padx=5, 
                             pady=5, 
-                            sticky="nsew"  # Changed to match data sticky
+                            sticky="nsew"
                         )
 
-        # Create table rows
-        attempt_counts = defaultdict(int)
-        for idx, entry in enumerate(sorted_data, 1):
-            attempt_counts[entry['username']] += 1
-            
-            # Create card frame
-            row_frame = ctk.CTkFrame(table_container, 
-                                   fg_color="#1E1E1E",
-                                   corner_radius=10)
+        # Table rows
+        for idx, entry in enumerate(display_data, 1):
+            row_frame = ctk.CTkFrame(table_container, fg_color="#1E1E1E", corner_radius=10)
             row_frame.pack(fill="x", pady=3, expand=True)
-        
-            # Configure grid columns
-            for i in range(5):
-                minsize = 180 if i == 1 else 100
-                row_frame.grid_columnconfigure(i, weight=1, minsize=minsize, uniform="col_group")
+
+            for i in range(len(headers)):
+                row_frame.grid_columnconfigure(i, weight=1, minsize=100, uniform="col_group")
 
             # Rank column
             ctk.CTkLabel(row_frame,
@@ -260,52 +375,89 @@ class Admin:
                        text_color="#A0A0A0",
                        anchor="w").grid(row=0, column=0, padx=5, sticky="nsew")
 
-            # Username column
-            ctk.CTkLabel(row_frame,
-                       text=entry['username'],
-                       font=("Inter SemiBold", 14),
-                       anchor="w").grid(row=0, column=1, padx=5, sticky="nsew")
+            # Data columns
+            if view_mode == "Top 25 Scores":
+                values = [
+                    entry['username'],
+                    f"{entry['score']}/{entry['total_q']}",
+                    entry['total_q'],
+                    str(self.processed_data['attempt_counts'][(entry['username'], category)])
+                ]
+            elif view_mode == "Top 10 Averages":
+                values = [
+                    entry['username'],
+                    f"{entry['average']:.2f}"
+                ]
+            else:
+                values = [
+                    entry['username'],
+                    str(entry['attempts'])
+                ]
 
-            # Score column
-            ctk.CTkLabel(row_frame,
-                       text=f"{entry['score']}/{entry['total_q']}",
-                       font=("Inter", 14)).grid(row=0, column=2, padx=5, sticky="nsew")
+            for col, value in enumerate(values, 1):
+                ctk.CTkLabel(row_frame,
+                           text=value,
+                           font=("Inter SemiBold", 14),
+                           anchor="w" if col == 1 else "center").grid(
+                               row=0, 
+                               column=col, 
+                               padx=5, 
+                               sticky="nsew"
+                           )
 
-            # Total questions column
-            ctk.CTkLabel(row_frame,
-                       text=entry['total_q'],
-                       font=("Inter", 14)).grid(row=0, column=3, padx=5, sticky="nsew")
-
-            # Attempt number column
-            ctk.CTkLabel(row_frame,
-                       text=str(attempt_counts[entry['username']]),
-                       font=("Inter", 14),
-                       text_color="#4CAF50").grid(row=0, column=4, padx=5, sticky="nsew")
-
-        # Create graph with top 10 attempts
+        # Create graph with different colors based on view mode
         try:
             self.current_figure, ax = plt.subplots(figsize=(8, 3.5))   
             self.current_figure.patch.set_facecolor('#2B2B2B')
             ax.set_facecolor('#2B2B2B')    
             
+            # Set graph color and data based on view mode
+            if view_mode == "Top 25 Scores":
+                graph_color = '#6357B1'  # Original purple color
+                graph_title = f"Top 25 Skor {self._translate_category(category)}"
+                # Show top 10 in graph for better readability
+                graph_data = sorted(raw_data, key=lambda x: x['score'], reverse=True)[:25]
+                if graph_data:
+                    labels = [f"{entry['username']} (#{i+1})" for i, entry in enumerate(graph_data)]
+                    values = [entry['score'] for entry in graph_data]
+                    ylabel = 'Skor'
+            elif view_mode == "Top 10 Averages":
+                graph_color = '#57B163'  # Green for averages
+                graph_title = f"Top 10 Rata-rata Skor {self._translate_category(category)}"
+                user_averages = []
+                for (user, cat), stats in self.processed_data['user_stats'].items():
+                    if cat == category:
+                        avg = stats['total_score'] / stats['attempts']
+                        user_averages.append({'username': user, 'average': avg})
+                graph_data = sorted(user_averages, key=lambda x: x['average'], reverse=True)[:10]
+                if graph_data:
+                    labels = [f"{entry['username']} (#{i+1})" for i, entry in enumerate(graph_data)]
+                    values = [entry['average'] for entry in graph_data]
+                    ylabel = 'Rata-rata Skor'
+            else:  # Top 10 Attempts
+                graph_color = '#B15757'  # Red for attempts
+                graph_title = f"Top 10 Jumlah Percobaan {self._translate_category(category)}"
+                user_attempts = [{'username': user, 'attempts': count} 
+                              for (user, cat), count in self.processed_data['attempt_counts'].items() 
+                              if cat == category]
+                graph_data = sorted(user_attempts, key=lambda x: x['attempts'], reverse=True)[:10]
+                if graph_data:
+                    labels = [f"{entry['username']} (#{i+1})" for i, entry in enumerate(graph_data)]
+                    values = [entry['attempts'] for entry in graph_data]
+                    ylabel = 'Jumlah Percobaan'
+            
             if graph_data:
-                # Create labels with attempt numbers
-                labels = [f"{entry['username']} (#{i+1})" 
-                        for i, entry in enumerate(graph_data)]
-                scores = [entry['score'] for entry in graph_data]
-                
-                bars = ax.bar(labels, scores, color='#6357B1')
-                ax.set_title(f"Top 10 Skor {self._translate_category(category)}", 
-                           color='white', pad=15, fontsize=12)
-                ax.set_ylabel('Skor', color='white', fontsize=10)
+                bars = ax.bar(labels, values, color=graph_color)
+                ax.set_title(graph_title, color='white', pad=15, fontsize=12)
+                ax.set_ylabel(ylabel, color='white', fontsize=10)
                 ax.tick_params(axis='both', colors='white', labelsize=8)
                 plt.xticks(rotation=45, ha='right', fontsize=8)
                 
-                # Add value labels
                 for bar in bars:
                     height = bar.get_height()
                     ax.text(bar.get_x() + bar.get_width()/2., height,
-                            f'{height}', ha='center', va='bottom',
+                            f'{height:.0f}' if view_mode != "Top 10 Averages" else f'{height:.2f}',
+                            ha='center', va='bottom',
                             color='white', fontsize=8)
             else:
                 ax.text(0.5, 0.5, 'Tidak ada data untuk kategori ini',
@@ -323,13 +475,14 @@ class Admin:
                                      text="Install matplotlib: 'pip install matplotlib'",
                                      text_color="#FF5555")
             error_label.pack(pady=20)
-    
+
     def _translate_category(self, category):
         return {
             "MC": "Pilihan Ganda",
             "TF": "True/False",
             "ESSAY": "Essay"
         }.get(category, category)
+
 
     def show_add_question(self):
         self._clear_content_area()
@@ -935,17 +1088,20 @@ class Admin:
 
     def save_timer_config(self):
         try:
-            minutes = int(self.timer_entry.get())
-            # Enforce 10-hour maximum (600 minutes)
-            if minutes > 600:
-                minutes = 600
-                messagebox.showinfo("Info", "Waktu maksimum timer adalah 10 jam! (600 menit). Timer akan disetel selama 600 menit.")
-        
+            seconds = int(self.timer_entry.get())
+            max_seconds = 36000  # 10 hours in seconds
+            if seconds > max_seconds:
+                seconds = max_seconds
+                messagebox.showinfo("Info", 
+                    f"Durasi timer maksimum 10 jam ({max_seconds} detik). "
+                    f"Timer disetel selama {max_seconds} detik."
+                )
+            
             with open("database/quiz_settings.txt", "w") as f:
-                f.write(f"timer_minutes={minutes}")
+                f.write(f"timer_seconds={seconds}")  # Store as seconds
             messagebox.showinfo("Success", "Konfigurasi timer berhasil disimpan!")
         except ValueError:
-            messagebox.showerror("Error", "Masukan waktu yang valid")
+            messagebox.showerror("Error", "Invalid input. Masukkan angka dalam detik yang valid!")
 
     def show_upload_question(self):
         self._clear_content_area()

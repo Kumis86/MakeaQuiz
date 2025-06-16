@@ -1,1 +1,1 @@
-timer_minutes=10
+timer_seconds=600

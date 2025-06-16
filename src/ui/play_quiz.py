@@ -71,16 +71,16 @@ class PlayQuizScreen(ctk.CTkFrame):
             if os.path.exists(settings_file):
                 with open(settings_file, "r") as f:
                     for line in f:
-                        if line.startswith("timer_minutes="):
-                            # Admin menyimpan dalam menit, kita gunakan detik
-                            minutes = int(line.strip().split("=")[1])
-                            self.timer_duration = minutes * 60 # <<< Konversi ke detik
-                            print(f"Timer duration loaded: {self.timer_duration} seconds ({minutes} minutes)")
+                        if line.startswith("timer_seconds="):
+                            # Admin menyimpan dalam detik
+                            seconds = int(line.strip().split("=")[1])
+                            self.timer_duration = seconds
+                            print(f"Timer dimuat: {self.timer_duration} detik")
                             break # Ambil baris pertama saja
             else:
-                print(f"Timer settings file not found. Using default: {self.timer_duration} seconds.")
+                print(f"Setelan timer tidak ditemukan! Menggunakan nilai default.")
         except Exception as e:
-            print(f"Error reading timer settings: {e}. Using default: {self.timer_duration} seconds.")
+            print(f"Error membaca timer: {e}. Menggunakan nilai default: {self.timer_duration} detik.")
             # Jika error, gunakan default
 
     def _load_all_questions(self):
@@ -858,11 +858,14 @@ class PlayQuizScreen(ctk.CTkFrame):
         quit_quiz_button.pack(side="bottom", pady=20)
 
     def _format_time(self, total_seconds):
-        """Format detik menjadi MM:SS"""
-        if total_seconds < 0: total_seconds = 0
-        minutes = total_seconds // 60
-        seconds = total_seconds % 60
-        return f"{minutes:02d}:{seconds:02d}"
+        """Format detik menjadi HH:MM:SS"""
+        if total_seconds < 0:
+            total_seconds = 0
+        hours = total_seconds // 3600
+        remaining = total_seconds % 3600
+        minutes = remaining // 60
+        seconds = remaining % 60
+        return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def _start_timer(self):
         """Memulai atau melanjutkan countdown timer."""
@@ -902,18 +905,35 @@ class PlayQuizScreen(ctk.CTkFrame):
 
     def _submit_answer(self, selected_answer=None):
         """Memproses jawaban yang diberikan pengguna."""
+        if not hasattr(self, 'current_quiz_questions') or not self.quiz_content_frame.winfo_exists():
+            return # Hindari error jika frame masih ada
+
         if not self.current_quiz_questions or self.current_question_index >= len(self.current_quiz_questions):
-             return # Hindari error jika state tidak valid
+            return # Hindari error jika state tidak valid
 
         question_data = self.current_quiz_questions[self.current_question_index]
         q_type = question_data['type']
         is_correct = False
 
-        # Disable tombol/entry setelah submit
-        if self.answer_entry: self.answer_entry.configure(state="disabled")
-        if self.submit_button: self.submit_button.configure(state="disabled")
-        for btn in self.option_buttons: btn.configure(state="disabled")
-        for btn in self.tf_buttons: btn.configure(state="disabled")
+        # Helper function to safely configure widgets
+        def safe_configure(widget, **kwargs):
+            """Safely configure a widget if it exists"""
+            if widget and widget.winfo_exists():
+                try:
+                    widget.configure(**kwargs)
+                except Exception:
+                    # Widget might be in process of destruction
+                    pass
+
+        # Disable widgets safely
+        safe_configure(self.answer_entry, state="disabled")
+        safe_configure(self.submit_button, state="disabled")
+        
+        for btn in self.option_buttons:
+            safe_configure(btn, state="disabled")
+        
+        for btn in self.tf_buttons:
+            safe_configure(btn, state="disabled")
 
         # Cek Jawaban
         if q_type == "Essay":
@@ -928,24 +948,25 @@ class PlayQuizScreen(ctk.CTkFrame):
         elif q_type == "True/False":
             correct_answer = question_data['answer'] # boolean
             is_correct = (selected_answer == correct_answer)
-            self.app_instance.audio.play_sound_effect(" assets/audio/select.wav")
+            self.app_instance.audio_manager.play_sound_effect(" assets/audio/select.wav")
             if not is_correct :
-                self.app_instance.audio.play_sound_effect("assets/audio/wrong.wav")
+                self.app_instance.audio_manager.play_sound_effect("assets/audio/wrong.wav")
             else :
-                self.app_instance.audio.play_sound_effect("assets/audio/select.wav")
+                self.app_instance.audio_manager.play_sound_effect("assets/audio/select.wav")
             feedback_text = "Benar!" if is_correct else f"Salah. Jawaban: {correct_answer}"
             feedback_color = "#4CAF50" if is_correct else "#E74C3C"
             if is_correct: self.score += 1 # <<< Skor hanya untuk TF & MC
-            self.after(1500, self._next_question) # Jeda 1.5 detik
+            if self.quiz_content_frame.winfo_exists():
+                self.after(1500, self._next_question) # Jeda 1.5 detik
         
         elif q_type == "Pilihan Ganda":
              correct_index = question_data['correct'] # integer (indeks)
              is_correct = (selected_answer == correct_index)
-             self.app_instance.audio.play_sound_effect("assets/audio/select.wav")
+             self.app_instance.audio_manager.play_sound_effect("assets/audio/select.wav")
              if not is_correct:
-                 self.app_instance.audio.play_sound_effect("assets/audio/wrong.wav")
+                 self.app_instance.audio_manager.play_sound_effect("assets/audio/wrong.wav")
              else :
-                self.app_instance.audio.play_sound_effect("assets/audio/select.wav")
+                self.app_instance.audio_manager.play_sound_effect("assets/audio/select.wav")
              feedback_text = "Benar!" if is_correct else f"Salah. Jawaban: {correct_index + 1}. {question_data['options'][correct_index]}"
              feedback_color = "#4CAF50" if is_correct else "#E74C3C"
              if is_correct: self.score += 1 # <<< Skor hanya untuk TF & MC
@@ -953,7 +974,8 @@ class PlayQuizScreen(ctk.CTkFrame):
              if not is_correct:
                   self.option_buttons[selected_answer].configure(fg_color="#E74C3C", hover_color="#C0392B") 
              self.option_buttons[correct_index].configure(fg_color="#4CAF50", hover_color="#388E3C") 
-             self.after(1500, self._next_question) # Jeda 1.5 detik
+             if self.quiz_content_frame.winfo_exists():
+                self.after(1500, self._next_question) # Jeda 1.5 detik
 
         # Update Skor dan Tampilkan Feedback
         if self.feedback_label:
