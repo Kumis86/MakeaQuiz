@@ -385,8 +385,9 @@ class Admin:
             text="Tambah Pertanyaan ke Database", 
             font=("Inter Bold", 16),
             height=50, # <<< Tinggikan tombol
-            fg_color="#6357B1", 
-            hover_color="#4F44A3",
+            fg_color="#E6B36A", 
+            hover_color="#C99A4B",
+            text_color="#000000",
             command=self.add_question
         )
         add_button.pack(pady=(30, 0), fill='x') # <<< Fill x
@@ -647,8 +648,9 @@ class Admin:
                      text="Muat Pertanyaan", 
             font=("Inter Bold", 14), # <<< Sesuaikan font
             height=40, # <<< Samakan tinggi dengan entry
-            fg_color="#6357B1", 
-            hover_color="#4F44A3",
+            fg_color="#E6B36A", 
+            hover_color="#C99A4B",
+            text_color="#000000",
             command=self.load_question_for_edit
         )
         load_button.pack(side="left", padx=5)
@@ -924,8 +926,9 @@ class Admin:
             text="Simpan Timer",
             font=("Inter Bold", 16),
             height=50,
-            fg_color="#6357B1",
-            hover_color="#4F44A3",
+            fg_color="#E6B36A",
+            hover_color="#C99A4B",
+            text_color="#000000",
             command=self.save_timer_config
         )
         save_timer_button.pack(pady=(30, 0), fill='x')
@@ -981,8 +984,9 @@ class Admin:
             text="Upload File .txt",
             font=("Inter Bold", 16),
             height=50,
-            fg_color="#6357B1",
-            hover_color="#4F44A3",
+            fg_color="#E6B36A",
+            hover_color="#C99A4B",
+            text_color="#000000",
             command=lambda: self.scraper.upload_question_file("txt")
         )
         upload_txt_button.pack(side="left", padx=10, expand=True, fill='x')
@@ -992,8 +996,9 @@ class Admin:
             text="Upload File .docx",
             font=("Inter Bold", 16),
             height=50,
-            fg_color="#6357B1",
-            hover_color="#4F44A3",
+            fg_color="#E6B36A",
+            hover_color="#C99A4B",
+            text_color="#000000",
             command=lambda: self.scraper.upload_question_file("docx")
         )
         upload_docx_button.pack(side="left", padx=10, expand=True, fill='x')
@@ -1043,8 +1048,9 @@ class Admin:
                                   text="Refresh Daftar",
                                   font=("Inter Bold", 16),
                                   height=40,
-                                  fg_color="#6357B1",
-                                  hover_color="#4F44A3",
+                                  fg_color="#E6B36A",
+                                  hover_color="#C99A4B",
+                                  text_color="#000000",
                                   command=self.refresh_user_list)
         refresh_btn.pack(pady=10, anchor="e")
 
@@ -1202,8 +1208,9 @@ class Admin:
             text="Cari Pertanyaan",
             font=("Inter Bold", 16),
             height=50,
-            fg_color="#6357B1",
-            hover_color="#4F44A3",
+            fg_color="#E6B36A",
+            hover_color="#C99A4B",
+            text_color="#000000",
             command=self.search_question
         )
         save_search_question_button.pack(pady=(30, 0), fill='x')
@@ -1259,8 +1266,9 @@ class Admin:
                 text="Cari Sekarang",
                 height=40,
                 font=("Inter Bold", 14),
-                fg_color="#6357B1",
-                hover_color="#4F44A3",
+                fg_color="#E6B36A",
+                hover_color="#C99A4B",
+                text_color="#000000",
                 command=self._handle_search
             )
            search_button.pack(pady=(0, 20), anchor="e")

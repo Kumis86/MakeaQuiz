@@ -8,7 +8,6 @@ import pygame
 
 try:
     # Import komponen-komponen UI
-    from src.ui.splash_screen import SplashScreen
     from src.ui.login_screen import LoginScreen
     from src.ui.signup_screen import SignupScreen
     from src.ui.dashboard import Dashboard
@@ -65,8 +64,8 @@ class MakeaQuizApp:
             self.music_button = MusicButton(self.window, self.audio_manager)
             self.music_button.btn.lift()  # Pastikan tombol di atas widget lain
             
-            # Mulai dengan splash screen
-            self.show_splash_screen()
+            # Langsung tampilkan main screen
+            self.show_main_screen()
             
             # Memulai aplikasi
             self.window.mainloop()
@@ -89,19 +88,6 @@ class MakeaQuizApp:
         self.window.destroy()
         sys.exit(0)
 
-
-
-    
-    def show_splash_screen(self):
-        """Menampilkan splash screen"""
-        try:
-            if self.current_frame:
-                self.current_frame.destroy()
-            self.current_frame = SplashScreen(self.window, self.navigate_to_main_screen)
-        except Exception as e:
-            print(f"Error in show_splash_screen: {e}")
-            traceback.print_exc()
-    
     def show_main_screen(self):
         """Menampilkan layar utama pemilihan"""
         try:

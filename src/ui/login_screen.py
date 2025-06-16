@@ -109,7 +109,8 @@ class LoginScreen(ctk.CTkFrame):
             height=46, 
             corner_radius=5, 
             fg_color="#E6B36A", 
-            hover_color="#4F44A3", 
+            hover_color="#C99A4B",
+            text_color="#000000",
             command=self.on_login
         )
         login_button.pack(side="left", padx=10) # <<< Pack di frame baru
@@ -122,7 +123,8 @@ class LoginScreen(ctk.CTkFrame):
             height=46, 
             corner_radius=5, 
             fg_color="#E6B36A", 
-            hover_color="#4F44A3", 
+            hover_color="#C99A4B", 
+            text_color="#000000",
             command=self.signup_callback
         )
         signup_button.pack(side="left", padx=10) # <<< Pack di frame baru
@@ -198,7 +200,7 @@ class LoginScreen(ctk.CTkFrame):
 
         kirim_btn = ctk.CTkButton(
             frame, text="Kirim OTP", font=("Inter Bold", 14),
-            command=kirim_otp, fg_color="#E6B36A", hover_color="#4F44A3"
+            command=kirim_otp, fg_color="#E6B36A", hover_color="#C99A4B"
         )
         kirim_btn.pack(pady=10)
 
@@ -255,7 +257,7 @@ class LoginScreen(ctk.CTkFrame):
 
         submit_btn = ctk.CTkButton(
             frame, text="Simpan Password", font=("Inter Bold", 14),
-            command=reset_password, fg_color="#E6B36A", hover_color="#4F44A3"
+            command=reset_password, fg_color="#E6B36A", hover_color="#C99A4B"
         )
         submit_btn.pack(pady=15)
 

@@ -190,7 +190,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             width=60,
             height=60,
             fg_color="#E6B36A",
-            hover_color="#4F44A3",
+            hover_color="#C99A4B",
             command=lambda: self._change_mode(-1)
         )
         left_arrow_button.pack(side="left", padx=20)
@@ -234,7 +234,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             width=60,
             height=60,
             fg_color="#E6B36A",
-            hover_color="#4F44A3",
+            hover_color="#C99A4B",
             command=lambda: self._change_mode(1)
         )
         right_arrow_button.pack(side="left", padx=20)
@@ -252,7 +252,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             height=50,
             corner_radius=10,
             fg_color="#E6B36A",
-            hover_color="#4F44A3",
+            hover_color="#C99A4B",
             command=self._select_mode_and_start
         )
         start_mode_button.pack(pady=10) # <<< Pack di dalam frame tombol bawah
@@ -266,7 +266,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             height=50, 
             corner_radius=10,
             fg_color="#E6B36A", 
-            hover_color="#4F44A3", 
+            hover_color="#C99A4B", 
             command=self.back_callback 
         )
         # <<< Hapus fill='x', biarkan pack default (center) >>>
@@ -280,7 +280,7 @@ class PlayQuizScreen(ctk.CTkFrame):
              width=50, 
              height=50,
              fg_color="#E6B36A", 
-             hover_color="#4F44A3",
+             hover_color="#C99A4B",
              corner_radius=25, # Buat jadi lingkaran
              command=self._toggle_navbar
         )
@@ -329,7 +329,7 @@ class PlayQuizScreen(ctk.CTkFrame):
                 height=45,
                 anchor="w", # Rata kiri
                 fg_color="#E74C3C" if is_close_button else "#E6B36A",
-                hover_color="#C0392B" if is_close_button else "#4F44A3",
+                hover_color="#C0392B" if is_close_button else "#C99A4B",
                 command=command
             )
             btn.pack(pady=pady_navbar, padx=20, fill="x")
@@ -369,7 +369,7 @@ class PlayQuizScreen(ctk.CTkFrame):
         title_label.pack(pady=(0, 20))
         user_info_label = ctk.CTkLabel(main_frame, text=f"Username: {current_user}", font=("Inter", 14))
         user_info_label.pack(pady=5)
-        change_pw_button = ctk.CTkButton(main_frame, text="Ubah Password", font=("Inter Bold", 16), height=45, fg_color="#6357B1", hover_color="#4F44A3", command=self._open_change_password_popup)
+        change_pw_button = ctk.CTkButton(main_frame, text="Ubah Password", font=("Inter Bold", 16), height=45, fg_color="#E6B36A", hover_color="#C99A4B", command=self._open_change_password_popup)
         change_pw_button.pack(pady=10, fill="x")
         delete_acc_button = ctk.CTkButton(main_frame, text="Hapus Akun Saya", font=("Inter Bold", 16), height=45, fg_color="#E74C3C", hover_color="#C0392B", command=self._confirm_delete_account)
         delete_acc_button.pack(pady=10, fill="x")
@@ -438,8 +438,8 @@ class PlayQuizScreen(ctk.CTkFrame):
             text="Simpan Perubahan",
             font=("Inter Bold", 16),
             height=45,
-            fg_color="#6357B1",
-            hover_color="#4F44A3",
+            fg_color="#E6B36A",
+            hover_color="#C99A4B",
             command=handle_submit
         )
         save_button.pack(pady=10, fill="x", padx=10)
@@ -782,8 +782,8 @@ class PlayQuizScreen(ctk.CTkFrame):
                  button_frame, 
                  text="Submit Jawaban", 
                  font=("Inter Bold", 16),
-                 fg_color="#6357B1",
-                 hover_color="#4F44A3",
+                 fg_color="#E6B36A",
+                 hover_color="#C99A4B",
                  command=self._submit_answer
             )
             self.submit_button.pack(pady=10)
