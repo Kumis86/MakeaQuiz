@@ -110,7 +110,8 @@ class MakeaQuizApp:
             self.current_frame = MainScreen(
                 self.window, 
                 admin_callback=self.navigate_to_admin_login,
-                user_callback=self.navigate_to_login
+                user_callback=self.navigate_to_login,
+                audio_manager=self.audio_manager
             )
             
             self.audio_manager.play_music(self.config.audio_paths["main_theme"])

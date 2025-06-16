@@ -104,7 +104,7 @@ class AdminLogin(ctk.CTkFrame):
             width=160,
             height=46,
             corner_radius=5,
-            fg_color="#6357B1",  # Purple color
+            fg_color="#E6B36A",  # Purple color
             hover_color="#4F44A3",
             command=self._verify_password
         )

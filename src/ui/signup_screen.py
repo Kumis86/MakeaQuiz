@@ -93,7 +93,7 @@ class SignupScreen(ctk.CTkFrame):
             width=180,
             height=46, 
             corner_radius=5, 
-            fg_color="#6357B1", 
+            fg_color="#E6B36A", 
             hover_color="#4F44A3", 
             command=self.on_register
         )
@@ -155,7 +155,7 @@ class SignupScreen(ctk.CTkFrame):
             text="Verifikasi",
             command=validate_otp,
             font=("Inter Bold", 14),
-            fg_color="#6357B1",
+            fg_color="#E6B36A",
             hover_color="#4F44A3"
         )
         verif_button.pack(pady=10)

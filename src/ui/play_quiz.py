@@ -189,7 +189,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             font=("Inter Bold", 30),
             width=60,
             height=60,
-            fg_color="#6357B1",
+            fg_color="#E6B36A",
             hover_color="#4F44A3",
             command=lambda: self._change_mode(-1)
         )
@@ -233,7 +233,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             font=("Inter Bold", 30),
             width=60,
             height=60,
-            fg_color="#6357B1",
+            fg_color="#E6B36A",
             hover_color="#4F44A3",
             command=lambda: self._change_mode(1)
         )
@@ -251,7 +251,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             width=250,
             height=50,
             corner_radius=10,
-            fg_color="#6357B1",
+            fg_color="#E6B36A",
             hover_color="#4F44A3",
             command=self._select_mode_and_start
         )
@@ -265,7 +265,7 @@ class PlayQuizScreen(ctk.CTkFrame):
             width=250, 
             height=50, 
             corner_radius=10,
-            fg_color="#6357B1", 
+            fg_color="#E6B36A", 
             hover_color="#4F44A3", 
             command=self.back_callback 
         )
@@ -279,7 +279,7 @@ class PlayQuizScreen(ctk.CTkFrame):
              font=("Arial", 24), # Ukuran icon
              width=50, 
              height=50,
-             fg_color="#6357B1", 
+             fg_color="#E6B36A", 
              hover_color="#4F44A3",
              corner_radius=25, # Buat jadi lingkaran
              command=self._toggle_navbar
@@ -328,7 +328,7 @@ class PlayQuizScreen(ctk.CTkFrame):
                 font=font_navbar,
                 height=45,
                 anchor="w", # Rata kiri
-                fg_color="#E74C3C" if is_close_button else "#6357B1",
+                fg_color="#E74C3C" if is_close_button else "#E6B36A",
                 hover_color="#C0392B" if is_close_button else "#4F44A3",
                 command=command
             )
