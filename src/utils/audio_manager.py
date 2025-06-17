@@ -10,12 +10,13 @@ class AudioManager:
 
         self.current_music = None
         self.paused = False
+        self.is_muted = False  # Status mute
 
     def play_music(self, path, volume=1.0, loop=-1):
         try:
             if self.current_music != path:
                 pygame.mixer.music.load(path)
-                pygame.mixer.music.set_volume(volume)
+                pygame.mixer.music.set_volume(0.0 if self.is_muted else volume)
                 pygame.mixer.music.play(loop)
                 self.current_music = path
                 self.paused = False
@@ -36,11 +37,17 @@ class AudioManager:
         self.current_music = None
         self.paused = False
     
+    def toggle_mute(self):
+        """Toggle status mute musik"""
+        self.is_muted = not self.is_muted
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.set_volume(0.0 if self.is_muted else 1.0)
+        return self.is_muted
 
     def play_sound_effect(self, path):
         try:
             sound = pygame.mixer.Sound(path)
-            sound.set_volume(1.0)
+            sound.set_volume(0.0 if self.is_muted else 1.0)
             sound.play()
         except Exception as e:
             print(f"[AudioManager] Error playing sound effect: {e}")

@@ -20,18 +20,13 @@ class MusicButton:
         # Posisikan tombol di kanan bawah
         self.btn.place(relx=1.0, rely=1.0, anchor="se", x=-20, y=-20)
         
-        # Mulai auto-update status tombol
-        self.update_button_state()
+        # Update tampilan tombol berdasarkan status mute
+        self.update_button_appearance(not self.audio_manager.is_muted)
     
     def toggle(self):
         """Toggle status musik dan update tampilan tombol"""
-        if pygame.mixer.music.get_busy():
-            self.audio_manager.stop_music()
-            self.update_button_appearance(False)
-        else:
-            # Menggunakan main_theme sebagai default
-            self.audio_manager.play_music("assets/audio/main_theme.mp3")
-            self.update_button_appearance(True)
+        is_playing = self.audio_manager.toggle_mute()
+        self.update_button_appearance(not is_playing)
     
     def update_button_appearance(self, is_playing):
         """Update tampilan tombol berdasarkan status musik"""
